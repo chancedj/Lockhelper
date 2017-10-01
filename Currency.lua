@@ -9,8 +9,8 @@ local addon = LibStub( "AceAddon-3.0" ):GetAddon( addonName );
 local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- Upvalues
-local next = -- variables
-      next      -- lua functions
+local next, strfmt =            -- variables
+      next, string.format       -- lua functions
 
 -- cache blizzard function/globals
 local GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted =    -- variables
@@ -39,6 +39,36 @@ local BONUS_ROLL_QUESTID = {
 }
 --]]
 
+local shortMap = {
+    [1] =
+        {
+            limit = 1e9, -- billions
+            fmt = "%.2fb"
+        },
+    [2] =
+        {
+            limit = 1e6, -- millions
+            fmt = "%.2fm"
+        },
+    [3] =
+        {
+            limit = 1e3, -- thousands
+            fmt = "%.2fk"
+        }
+}
+
+local function shortenAmount( amount )
+    local result = amount
+
+    for _, map in next, shortMap do
+        if( amount > map.limit ) then
+            return strfmt( map.fmt, amount / map.limit );
+        end
+    end
+    
+    return result;
+end
+
 function Lockedout_BuildCurrentList( realmName, charNdx, playerData )
     local currency = {}; -- initialize currency table;
 
@@ -51,9 +81,9 @@ function Lockedout_BuildCurrentList( realmName, charNdx, playerData )
             currency[ name ] = {}
             currency[ name ].icon = "|T" .. icon .. ":0|t";
             if( maximum > 0 ) then
-                currency[ name ].displayText = count .. "/" .. maximum;
+                currency[ name ].displayText = shortenAmount( count ) .. "/" .. shortenAmount( maximum );
             else
-                currency[ name ].displayText = count;
+                currency[ name ].displayText = shortenAmount( count );
             end
 
             local questList = BONUS_ROLL_QUESTID[ name ];
