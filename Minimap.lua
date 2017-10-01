@@ -130,8 +130,12 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
     local lineNum = tooltip:AddLine( );
     tooltip.lines[ lineNum ].is_header = true;
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
-    for currencyName, _ in next, currencyList do
-        lineNum = tooltip:AddLine( currencyName );
+    for currencyName, currencyData in next, currencyList do
+        if( currencyData.icon ) then
+            lineNum = tooltip:AddLine( currencyData.icon .. currencyName );
+        else
+            lineNum = tooltip:AddLine( currencyName );
+        end
         
         for colNdx, charData in next, charList do
             if (LockoutDb[ charData.realmName ] ~= nil) and
@@ -222,8 +226,9 @@ function addon:ShowInfo( frame )
                 end -- for bossName, _ in next, charData.worldBosses
                 
                 charData.currency = charData.currency or {};
-                for currName, _ in next, charData.currency do
-                    currencyList[ currName ] = "set"
+                for currName, currData in next, charData.currency do
+                    currencyList[ currName ] = currencyList[ currName ] or {};
+                    currencyList[ currName ].icon = currencyList[ currName ].icon or currData.icon
                 end -- for currName, _ in next, charData.currency
             end -- for charName, instances in next, characters
         end

@@ -14,7 +14,7 @@ local next = -- variables
 
 -- cache blizzard function/globals
 local GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted =    -- variables
-      GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted        -- blizzard api
+      GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted      -- blizzard api
 
 ---[[
 local BONUS_ROLL_QUESTID = {
@@ -45,10 +45,11 @@ function Lockedout_BuildCurrentList( realmName, charNdx, playerData )
     local currencyListSize = GetCurrencyListSize();
     local calculatedResetDate = addon:getWeeklyLockoutDate();
     for index=1, currencyListSize do
-        local name, isHeader, isExpanded, isUnused, isWatched, count, icon, maximum = GetCurrencyListInfo(index);
+        local name, isHeader, _, isUnused, _, count, icon, maximum = GetCurrencyListInfo( index );
 
         if( not isHeader ) and ( not isUnused ) then
             currency[ name ] = {}
+            currency[ name ].icon = "|T" .. icon .. ":0|t";
             if( maximum > 0 ) then
                 currency[ name ].displayText = count .. "/" .. maximum;
             else
