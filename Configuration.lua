@@ -9,10 +9,19 @@ local addon = LibStub( "AceAddon-3.0" ):NewAddon( addonName, "AceConsole-3.0", "
 local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- cache lua functions
-local InterfaceOptionsFrame_OpenToCategory =    -- variables
-      InterfaceOptionsFrame_OpenToCategory      -- lua functions
+local InterfaceOptionsFrame_OpenToCategory, GetMacroIcons =    -- variables
+      InterfaceOptionsFrame_OpenToCategory, GetMacroIcons      -- lua functions
 
 function addon:getConfigOptions()
+    --[[
+    local iconList = GetMacroIcons( nil );
+
+    local iconDb = {};
+    for ndx, textureId in next, iconList do
+        iconDb[ textureId ] = "|T" .. textureId .. ":0|t"
+    end
+    --]]
+    
 	local configOptions = {
 		type = "group",
 		name = addonName,
@@ -55,6 +64,15 @@ function addon:getConfigOptions()
                     end,
 			  get = function(info) return self.config.profile.minimap.hide end
 			},
+            --[[
+            minimapIconList = {
+                order = 13,
+                name = "Choose Icon",
+                desc = "Choose icon for addon",
+                type = "select",
+                values = iconList
+            },
+            --]]
 			dungeonHeader={
 			  order = 20,
 			  name = L["Instance Options"],
