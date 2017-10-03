@@ -1,6 +1,5 @@
 --[[
-    This file is to deal with the code to generate the lockout table/vector and
-    to handle the refresh of data and deletion of stale data
+    This file handles world boss information.
 --]]
 local addonName, _ = ...;
 

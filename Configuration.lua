@@ -133,6 +133,19 @@ function addon:getConfigOptions()
 			  set = function(info,val) self.config.profile.currency.show = val; end,
 			  get = function(info) return self.config.profile.currency.show end
 			},
+            emmisaryHeader={
+			  order = 60,
+			  name = L["Emmisary Options"],
+			  type = "header",
+            },
+            emmisaryShow = {
+			  order = 61,
+			  name = L["Show"],
+			  desc = L["Show Emmisary Information"],
+			  type = "toggle",
+			  set = function(info,val) self.config.profile.emmisary.show = val; end,
+			  get = function(info) return self.config.profile.emmisary.show end
+            }
 		}
 	};
 	
@@ -163,7 +176,10 @@ function addon:getDefaultOptions()
 			},
 			currency = {
 				show = true
-			}
+			},
+            emmisary = {
+                show = true
+            }
 		}
 	}
 	

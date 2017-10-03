@@ -158,6 +158,46 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
     tooltip:AddSeparator( );
 end -- populateInstanceData
 
+local BOSS_KILL_TEXT = "|T" .. READY_CHECK_READY_TEXTURE .. ":0|t";
+local function populateEmmisaryData( header, tooltip, charList, emmisaryList )
+    -- make sure it's not empty
+    if ( next( emmisaryList ) == nil ) then return; end
+
+    -- start adding the instances we have completed with any chacters
+    local lineNum = tooltip:AddLine( );
+    tooltip.lines[ lineNum ].is_header = true;
+    tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
+    for index, emmisaryData in next, emmisaryList do
+        if( emmisaryData.icon ) then
+            lineNum = tooltip:AddLine( emmisaryData.icon .. emmisaryData.name );
+        else
+            lineNum = tooltip:AddLine( emmisaryData.name );
+        end
+        
+        for colNdx, charData in next, charList do
+            if (LockoutDb[ charData.realmName ] ~= nil) and
+               (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
+               (LockoutDb[ charData.realmName ][ charData.charNdx ].emmisaries[ index ] ~= nil) then
+                local emData = LockoutDb[ charData.realmName ][ charData.charNdx ].emmisaries[ index ];
+
+                local displayText;
+                if( emData.completed ) then
+                    displayText = BOSS_KILL_TEXT
+                else
+                    displayText = emData.fullfilled .. "/" .. emData.required;
+                end
+
+                tooltip:SetCell( lineNum, colNdx + 1, displayText, nil, "CENTER" );
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", emptyFunction );    -- open tooltip with info when entering cell.
+                tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
+            end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
+        end -- for colNdx, charData in next, charList
+    end -- for currencyName, _ in next, currencyList
+
+    tooltip:AddSeparator( );
+end
+
 local function addColorBanding( tt )
     local resetnum = 0;
     local opacLevel;
@@ -185,7 +225,8 @@ function addon:ShowInfo( frame )
     Lockedout_BuildInstanceLockout( currRealmName, charNdx, playerData );
     Lockedout_BuildWorldBoss( currRealmName, charNdx, playerData );
     Lockedout_BuildCurrentList( currRealmName, charNdx, playerData );
-
+    self:Lockedout_BuildEmmisary( currRealmName, charNdx );
+    
     -- Acquire a tooltip with 3 columns, respectively aligned to left, center and right
     local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
     self.tooltip = tooltip;
@@ -196,7 +237,8 @@ function addon:ShowInfo( frame )
     local raidList = {};
     local worldBossList = {};
     local currencyList = {};
-
+    local emmisaryList = {};
+    
     -- get list of characters and realms for the horizontal
     for realmName, characters in next, LockoutDb do
         if( not self.config.profile.general.currentRealm ) or ( currRealmName == realmName ) then
@@ -230,6 +272,18 @@ function addon:ShowInfo( frame )
                     currencyList[ currName ] = currencyList[ currName ] or {};
                     currencyList[ currName ].icon = currencyList[ currName ].icon or currData.icon
                 end -- for currName, _ in next, charData.currency
+                
+                -- redundant since we always have the same 3 across all chars
+                -- populate once
+                charData.emmisaries = charData.emmisaries or {};
+                if( #emmisaryList == 0 ) then
+                    for ei, emData in next, charData.emmisaries do
+                        emmisaryList[ ei ] = {
+                            name = "(+" .. (ei - 1) .. " Day) " .. emData.name,
+                            icon = emData.icon
+                        }
+                    end
+                end
             end -- for charName, instances in next, characters
         end
     end -- for realmName, characters in next, LockoutDb
@@ -243,6 +297,7 @@ function addon:ShowInfo( frame )
                             return l.charName < r.charName;
                           end
     );
+
     -- sort instance list
     table.sort( dungeonList );
     table.sort( raidList );
@@ -312,6 +367,9 @@ function addon:ShowInfo( frame )
     end
     if( self.config.profile.currency.show ) then
         populateCurrencyData( L["Currency"], tooltip, charList, currencyList );
+    end
+    if( self.config.profile.emmisary.show ) then
+        populateEmmisaryData( L["Emmisary"], tooltip, charList, emmisaryList );
     end
 
     local lineNum = tooltip:AddLine( );
