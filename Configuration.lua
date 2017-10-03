@@ -120,18 +120,18 @@ function addon:getConfigOptions()
 			  set = function(info,val) self.config.profile.worldBoss.showKilledOnly = val; end,
 			  get = function(info) return self.config.profile.worldBoss.showKilledOnly end
             },
-            emmisaryHeader={
+            emissaryHeader={
 			  order = 50,
-			  name = L["Emmisary Options"],
+			  name = L["Emissary Options"],
 			  type = "header",
             },
-            emmisaryShow = {
+            emissaryShow = {
 			  order = 51,
 			  name = L["Show"],
-			  desc = L["Show Emmisary Information"],
+			  desc = L["Show Emissary Information"],
 			  type = "toggle",
-			  set = function(info,val) self.config.profile.emmisary.show = val; end,
-			  get = function(info) return self.config.profile.emmisary.show end
+			  set = function(info,val) self.config.profile.emissary.show = val; end,
+			  get = function(info) return self.config.profile.emissary.show end
             },
 			currencyHeader={
 			  order = 60,
@@ -177,7 +177,7 @@ function addon:getDefaultOptions()
 			currency = {
 				show = true
 			},
-            emmisary = {
+            emissary = {
                 show = true
             }
 		}

@@ -1,5 +1,5 @@
 --[[
-    This file handles emmisary tracking
+    This file handles emissary tracking
 --]]
 local addonName, _ = ...;
 
@@ -17,13 +17,13 @@ local GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
       GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
         GetQuestResetTime, SecondsToTime, GetServerTime                                 -- blizzard api
 
-local EMMISARY_MAP_ID = 1014;
+local EMISSARY_MAP_ID = 1014;
       
-function addon:Lockedout_BuildEmmisary( realmName, charNdx )
-    local emmisaries = {}; -- initialize world boss table;
+function addon:Lockedout_BuildEmissary( realmName, charNdx )
+    local emissaries = {}; -- initialize world boss table;
     local dayCalc = 24 * 60 * 60;
     
-    local bounties = GetQuestBountyInfoForMapID( EMMISARY_MAP_ID );
+    local bounties = GetQuestBountyInfoForMapID( EMISSARY_MAP_ID );
 
     for i = 1, #bounties do
         local questId = bounties[ i ].questID;
@@ -31,7 +31,7 @@ function addon:Lockedout_BuildEmmisary( realmName, charNdx )
         local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questId, 1, false )
         local title = GetQuestLogTitle( GetQuestLogIndexByID( questId ) );
         
-        local emmisary = {
+        local emissary = {
             name = title,
             fullfilled = numFulfilled,
             required = numRequired,
@@ -40,8 +40,8 @@ function addon:Lockedout_BuildEmmisary( realmName, charNdx )
             resetDate = GetServerTime() + GetQuestResetTime() + ((i - 1) * dayCalc);
         };
         
-        emmisaries[ #emmisaries + 1 ] = emmisary;
+        emissaries[ #emissaries + 1 ] = emissary;
     end -- for i = 1, #bounties do
     
-    LockoutDb[ realmName ][ charNdx ].emmisaries = emmisaries;
-end -- Lockedout_BuildEmmisary()
+    LockoutDb[ realmName ][ charNdx ].emissaries = emissaries;
+end -- Lockedout_BuildEmissary()

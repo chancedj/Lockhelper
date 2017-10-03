@@ -159,26 +159,26 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
 end -- populateInstanceData
 
 local BOSS_KILL_TEXT = "|T" .. READY_CHECK_READY_TEXTURE .. ":0|t";
-local function populateEmmisaryData( header, tooltip, charList, emmisaryList )
+local function populateEmissaryData( header, tooltip, charList, emissaryList )
     -- make sure it's not empty
-    if ( next( emmisaryList ) == nil ) then return; end
+    if ( next( emissaryList ) == nil ) then return; end
 
     -- start adding the instances we have completed with any chacters
     local lineNum = tooltip:AddLine( );
     tooltip.lines[ lineNum ].is_header = true;
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
-    for index, emmisaryData in next, emmisaryList do
-        if( emmisaryData.icon ) then
-            lineNum = tooltip:AddLine( emmisaryData.icon .. emmisaryData.name );
+    for index, emissaryData in next, emissaryList do
+        if( emissaryData.icon ) then
+            lineNum = tooltip:AddLine( emissaryData.icon .. emissaryData.name );
         else
-            lineNum = tooltip:AddLine( emmisaryData.name );
+            lineNum = tooltip:AddLine( emissaryData.name );
         end
         
         for colNdx, charData in next, charList do
             if (LockoutDb[ charData.realmName ] ~= nil) and
                (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
-               (LockoutDb[ charData.realmName ][ charData.charNdx ].emmisaries[ index ] ~= nil) then
-                local emData = LockoutDb[ charData.realmName ][ charData.charNdx ].emmisaries[ index ];
+               (LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries[ index ] ~= nil) then
+                local emData = LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries[ index ];
 
                 local displayText;
                 if( emData.completed ) then
@@ -223,7 +223,7 @@ function addon:ShowInfo( frame )
     Lockedout_BuildInstanceLockout( currRealmName, charNdx, playerData );
     Lockedout_BuildWorldBoss( currRealmName, charNdx, playerData );
     Lockedout_BuildCurrentList( currRealmName, charNdx, playerData );
-    self:Lockedout_BuildEmmisary( currRealmName, charNdx );
+    self:Lockedout_BuildEmissary( currRealmName, charNdx );
     
     -- Acquire a tooltip with 3 columns, respectively aligned to left, center and right
     local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
@@ -235,7 +235,7 @@ function addon:ShowInfo( frame )
     local raidList = {};
     local worldBossList = {};
     local currencyList = {};
-    local emmisaryList = {};
+    local emissaryList = {};
     
     -- get list of characters and realms for the horizontal
     for realmName, characters in next, LockoutDb do
@@ -273,10 +273,10 @@ function addon:ShowInfo( frame )
                 
                 -- redundant since we always have the same 3 across all chars
                 -- populate once
-                charData.emmisaries = charData.emmisaries or {};
-                if( #emmisaryList == 0 ) then
-                    for ei, emData in next, charData.emmisaries do
-                        emmisaryList[ ei ] = {
+                charData.emissaries = charData.emissaries or {};
+                if( #emissaryList == 0 ) then
+                    for ei, emData in next, charData.emissaries do
+                        emissaryList[ ei ] = {
                             name = "(+" .. (ei - 1) .. " Day) " .. emData.name,
                             icon = emData.icon
                         }
@@ -363,8 +363,8 @@ function addon:ShowInfo( frame )
     if( self.config.profile.worldBoss.show ) then
         populateWorldBossData( L["World Boss"], tooltip, charList, worldBossList );
     end
-    if( self.config.profile.emmisary.show ) then
-        populateEmmisaryData( L["Emmisary"], tooltip, charList, emmisaryList );
+    if( self.config.profile.emissary.show ) then
+        populateEmissaryData( L["Emissary"], tooltip, charList, emissaryList );
     end
     if( self.config.profile.currency.show ) then
         populateCurrencyData( L["Currency"], tooltip, charList, currencyList );

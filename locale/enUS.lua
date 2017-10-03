@@ -12,7 +12,7 @@ L["Dungeon"]                            = "Dungeon";
 L["Raid"]                               = "Raid";
 L["World Boss"]                         = "World Boss";
 L["Currency"]                           = "Currency";
-L["Emmisary"]                           = "Emmisary";
+L["Emissary"]                           = "Emissary";
 L["Character iLevels"]                  = "Character iLevels";
 L["Defeated"]                           = "Defeated";
 L["Available"]                          = "Available";
@@ -26,7 +26,7 @@ L["Instance Options"]   = "Instance Options";
 L["Raid Options"]       = "Raid Options";
 L["World Boss Options"] = "World Boss Options";
 L["Currency Options"]   = "Currency Options";
-L["Emmisary Options"]   = "Emmisary Options";
+L["Emissary Options"]   = "Emissary Options";
 
 -- * labels
 L["Enable"]         = "Enable";
@@ -43,7 +43,7 @@ L["Show raid information"]                      = "Show raid information";
 L["Show world boss information"]                = "Show world boss information";
 L["Show in list only when killed"]              = "Show in list only when killed";
 L["Show currency information"]                  = "Show currency information";
-L["Show Emmisary Information"]                  = "Show Emmisary Information";
+L["Show Emissary Information"]                  = "Show Emissary Information";
 
 -- difficulty mapping full
 L["Unknown"]    = "Unknown";

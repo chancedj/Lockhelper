@@ -96,7 +96,7 @@ local function checkExpiredLockouts()
             end
             
             clearExpiredLockouts( charData.worldBosses );
-            clearExpiredLockouts( charData.emmisaries );
+            clearExpiredLockouts( charData.emissaries );
             
             local emptySet = allCleared( charData.instances,
                                          charData.worldBosses );
