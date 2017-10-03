@@ -188,8 +188,6 @@ local function populateEmmisaryData( header, tooltip, charList, emmisaryList )
                 end
 
                 tooltip:SetCell( lineNum, colNdx + 1, displayText, nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", emptyFunction );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
@@ -365,11 +363,11 @@ function addon:ShowInfo( frame )
     if( self.config.profile.worldBoss.show ) then
         populateWorldBossData( L["World Boss"], tooltip, charList, worldBossList );
     end
-    if( self.config.profile.currency.show ) then
-        populateCurrencyData( L["Currency"], tooltip, charList, currencyList );
-    end
     if( self.config.profile.emmisary.show ) then
         populateEmmisaryData( L["Emmisary"], tooltip, charList, emmisaryList );
+    end
+    if( self.config.profile.currency.show ) then
+        populateCurrencyData( L["Currency"], tooltip, charList, currencyList );
     end
 
     local lineNum = tooltip:AddLine( );

@@ -13,9 +13,9 @@ local next = -- variables
 
 -- cache blizzard function/globals
 local GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
-        GetQuestResetTime, SecondsToTime =                               -- variables 
+        GetQuestResetTime, SecondsToTime, GetServerTime =                               -- variables 
       GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
-        GetQuestResetTime, SecondsToTime                                 -- blizzard api
+        GetQuestResetTime, SecondsToTime, GetServerTime                                 -- blizzard api
 
 local EMMISARY_MAP_ID = 1014;
       
@@ -37,7 +37,7 @@ function addon:Lockedout_BuildEmmisary( realmName, charNdx )
             required = numRequired,
             isComplete = finished,
             icon = "|T" .. bounties[ i ].icon .. ":0|t",
-            resetDate = GetQuestResetTime() + ((i - 1) * dayCalc);
+            resetDate = GetServerTime() + GetQuestResetTime() + ((i - 1) * dayCalc);
         };
         
         emmisaries[ #emmisaries + 1 ] = emmisary;
