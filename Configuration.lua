@@ -208,10 +208,10 @@ function addon:OnInitialize()
     self.optionFrame.default = function() self:ResetDefaults() end;
 	self:RegisterChatCommand( "lo", "ChatCommand" );
 	self:RegisterChatCommand( "lockedout", "ChatCommand" );
-    
-    self:RegisterEvent("PLAYER_ENTERING_WORLD");
-    --self:RegisterEvent("PLAYER_ENTERING_WORLD");
-    --self:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+    -- events
+    self:RegisterEvent( "PLAYER_ENTERING_WORLD", "FullCharacterRefresh" );
+    self:RegisterEvent( "BOSS_KILL", "FullCharacterRefresh" );
 end
 
 function addon:ChatCommand()
@@ -232,6 +232,7 @@ function addon:OpenConfigDialog( button )
 	end
 end
 
-function addon:PLAYER_ENTERING_WORLD()
+function addon:FullCharacterRefresh()
+    print( "refreshing" );
     self:Lockedout_GetCurrentCharData();
 end
