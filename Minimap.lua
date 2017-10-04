@@ -169,7 +169,7 @@ local function populateEmissaryData( header, tooltip, charList, emissaryList )
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
     for index, emissaryData in next, emissaryList do
         if( emissaryData.icon ) then
-            lineNum = tooltip:AddLine( emissaryData.icon .. emissaryData.name );
+            lineNum = tooltip:AddLine( emissaryData.icon .. " " .. emissaryData.name );
         else
             lineNum = tooltip:AddLine( emissaryData.name );
         end
