@@ -43,17 +43,17 @@ local shortMap = {
     [1] =
         {
             limit = 1e9, -- billions
-            fmt = "%.2fb"
+            fmt = "%.1fb"
         },
     [2] =
         {
             limit = 1e6, -- millions
-            fmt = "%.2fm"
+            fmt = "%.1fm"
         },
     [3] =
         {
             limit = 1e3, -- thousands
-            fmt = "%.2fk"
+            fmt = "%.1fk"
         }
 }
 
