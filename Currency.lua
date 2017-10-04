@@ -69,7 +69,7 @@ local function shortenAmount( amount )
     return result;
 end
 
-function Lockedout_BuildCurrentList( realmName, charNdx, playerData )
+function addon:Lockedout_BuildCurrencyList( realmName, charNdx )
     local currency = {}; -- initialize currency table;
 
     local currencyListSize = GetCurrencyListSize();
@@ -105,5 +105,5 @@ function Lockedout_BuildCurrentList( realmName, charNdx, playerData )
         end
     end
 
-    playerData.currency = currency;
+    LockoutDb[ realmName ][ charNdx ].currency = currency;
 end -- Lockedout_BuildInstanceLockout()

@@ -85,13 +85,15 @@ local function checkExpiredLockouts()
     
     for realmName, characters in next, LockoutDb do
         for charNdx, charData in next, characters do
-            for instanceName, instanceData in next, charData.instances do
-                clearExpiredLockouts( instanceData );
-                
-                -- if the data expired and emptys our table, clear the instance table
-                local key = next(instanceData);
-                if( key == nil ) then
-                    charData.instances[ instanceName ] = nil;
+            if( charData.instances ~= nil ) then
+                for instanceName, instanceData in next, charData.instances do
+                    clearExpiredLockouts( instanceData );
+                    
+                    -- if the data expired and emptys our table, clear the instance table
+                    local key = next(instanceData);
+                    if( key == nil ) then
+                        charData.instances[ instanceName ] = nil;
+                    end
                 end
             end
             
@@ -134,7 +136,12 @@ function addon:Lockedout_GetCurrentCharData()
     
     LockoutDb[ realmName ][ charNdx ] = playerData;            -- initialize playerDb if not already initialized
 
+    self:Lockedout_BuildInstanceLockout( realmName, charNdx );
+    self:Lockedout_BuildWorldBoss( realmName, charNdx );
+    self:Lockedout_BuildCurrencyList( realmName, charNdx );
+    self:Lockedout_BuildEmissary( realmName, charNdx );
+    
     table.sort( LockoutDb ); -- sort the realms alphabetically
     
-    return realmName, charName, charNdx;
+    return realmName, playerData;
 end -- Lockedout_GetCurrentCharData()

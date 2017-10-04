@@ -217,14 +217,8 @@ function addon:ShowInfo( frame )
         self.tooltip = nil;
     end -- if ( self.tooltip ~= nil )
 
-    local currRealmName, _, charNdx = addon:Lockedout_GetCurrentCharData();
-    local playerData = LockoutDb[ currRealmName ][ charNdx ];
+    local currRealmName, playerData = addon:Lockedout_GetCurrentCharData();
 
-    Lockedout_BuildInstanceLockout( currRealmName, charNdx, playerData );
-    Lockedout_BuildWorldBoss( currRealmName, charNdx, playerData );
-    Lockedout_BuildCurrentList( currRealmName, charNdx, playerData );
-    self:Lockedout_BuildEmissary( currRealmName, charNdx );
-    
     -- Acquire a tooltip with 3 columns, respectively aligned to left, center and right
     local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
     self.tooltip = tooltip;

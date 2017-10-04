@@ -107,7 +107,7 @@ function CheckForMissingMappings()
 end -- CheckForMissingMappings()
 
 local BOSS_KILL_TEXT = "|T" .. READY_CHECK_READY_TEXTURE .. ":0|t";
-function Lockedout_BuildWorldBoss( realmName, charNdx, playerData )
+function addon:Lockedout_BuildWorldBoss( realmName, charNdx )
     local worldBosses = {}; -- initialize world boss table;
     
     local calculatedResetDate = addon:getWeeklyLockoutDate();
@@ -125,5 +125,5 @@ function Lockedout_BuildWorldBoss( realmName, charNdx, playerData )
         end -- if( bossData.questId )
     end -- for bossId, bossData in next, WORLD_BOSS_LIST
     
-    playerData.worldBosses = worldBosses;
+    LockoutDb[ realmName ][ charNdx ].worldBosses = worldBosses;
 end -- Lockedout_BuildInstanceLockout()

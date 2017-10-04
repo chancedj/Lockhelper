@@ -208,6 +208,10 @@ function addon:OnInitialize()
     self.optionFrame.default = function() self:ResetDefaults() end;
 	self:RegisterChatCommand( "lo", "ChatCommand" );
 	self:RegisterChatCommand( "lockedout", "ChatCommand" );
+    
+    self:RegisterEvent("PLAYER_ENTERING_WORLD");
+    --self:RegisterEvent("PLAYER_ENTERING_WORLD");
+    --self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function addon:ChatCommand()
@@ -226,4 +230,8 @@ function addon:OpenConfigDialog( button )
 		InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #1
 		InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #2
 	end
+end
+
+function addon:PLAYER_ENTERING_WORLD()
+    self:Lockedout_GetCurrentCharData();
 end
