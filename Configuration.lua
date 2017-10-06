@@ -133,13 +133,26 @@ function addon:getConfigOptions()
 			  set = function(info,val) self.config.profile.emissary.show = val; end,
 			  get = function(info) return self.config.profile.emissary.show end
             },
-			currencyHeader={
+            weeklyQuestHeader={
 			  order = 60,
+			  name = L["Weekly Quest Options"],
+			  type = "header",
+            },
+            weeklyQuestShow = {
+			  order = 61,
+			  name = L["Show"],
+			  desc = L["Show weekly quest information"],
+			  type = "toggle",
+			  set = function(info,val) self.config.profile.weeklyQuest.show = val; end,
+			  get = function(info) return self.config.profile.weeklyQuest.show end
+            },
+			currencyHeader={
+			  order = 100,
 			  name = L["Currency Options"],
 			  type = "header",
 			},
 			currencyShow = {
-			  order = 61,
+			  order = 101,
 			  name = L["Show"],
 			  desc = L["Show currency information"],
 			  type = "toggle",
@@ -178,6 +191,9 @@ function addon:getDefaultOptions()
 				show = true
 			},
             emissary = {
+                show = true
+            },
+            weeklyQuest = {
                 show = true
             }
 		}
@@ -233,6 +249,5 @@ function addon:OpenConfigDialog( button )
 end
 
 function addon:FullCharacterRefresh()
-    print( "refreshing" );
     self:Lockedout_GetCurrentCharData();
 end

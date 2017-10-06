@@ -122,6 +122,35 @@ local function populateWorldBossData( header, tooltip, charList, worldBossList )
     tooltip:AddSeparator( );
 end -- populateInstanceData
 
+local function populateWeeklyQuestData( header, tooltip, charList, weeklyQuestList )
+    -- make sure it's not empty
+    if ( next( weeklyQuestList ) == nil ) then return; end
+
+    -- start adding the instances we have completed with any chacters
+    local lineNum = tooltip:AddLine( );
+    tooltip.lines[ lineNum ].is_header = true;
+    tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
+
+    for questAbbr, questName in next, weeklyQuestList do
+        lineNum = tooltip:AddLine( questName );
+
+        for colNdx, charData in next, charList do
+            if (LockoutDb[ charData.realmName ] ~= nil) and
+               (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
+               (LockoutDb[ charData.realmName ][ charData.charNdx ].weeklyQuests[ questAbbr ] ~= nil) then
+                local questData = LockoutDb[ charData.realmName ][ charData.charNdx ].weeklyQuests[ questAbbr ];
+                
+                tooltip:SetCell( lineNum, colNdx + 1, questData.displayText, nil, "CENTER" );
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", emptyFunction );    -- open tooltip with info when entering cell.
+                tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
+            end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
+        end -- for colNdx, charData in next, charList
+    end -- for questName, _ in next, weeklyQuestList
+
+    tooltip:AddSeparator( );
+end -- populateInstanceData
+
 local function populateCurrencyData( header, tooltip, charList, currencyList )
     -- make sure it's not empty
     if ( next( currencyList ) == nil ) then return; end
@@ -230,7 +259,8 @@ function addon:ShowInfo( frame )
     local worldBossList = {};
     local currencyList = {};
     local emissaryList = {};
-    
+    local weeklyQuestList = {};
+
     -- get list of characters and realms for the horizontal
     for realmName, characters in next, LockoutDb do
         if( not self.config.profile.general.currentRealm ) or ( currRealmName == realmName ) then
@@ -254,20 +284,21 @@ function addon:ShowInfo( frame )
                     end -- if ( data.isRaid )
                 end -- for instanceName, _ in next, instances
                 
-                charData.worldBosses = charData.worldBosses or {};
                 for bossName, _ in next, charData.worldBosses do
                     worldBossList[ bossName ] = "set"
                 end -- for bossName, _ in next, charData.worldBosses
                 
-                charData.currency = charData.currency or {};
                 for currName, currData in next, charData.currency do
                     currencyList[ currName ] = currencyList[ currName ] or {};
                     currencyList[ currName ].icon = currencyList[ currName ].icon or currData.icon
                 end -- for currName, _ in next, charData.currency
                 
+                for questAbbr, questData in next, charData.weeklyQuests do
+                    weeklyQuestList[ questAbbr ] = questData.name;
+                end
+                
                 -- redundant since we always have the same 3 across all chars
                 -- populate once
-                charData.emissaries = charData.emissaries or {};
                 if( #emissaryList == 0 ) then
                     for ei, emData in next, charData.emissaries do
                         emissaryList[ ei ] = {
@@ -359,6 +390,9 @@ function addon:ShowInfo( frame )
     end
     if( self.config.profile.emissary.show ) then
         populateEmissaryData( L["Emissary"], tooltip, charList, emissaryList );
+    end
+    if( self.config.profile.weeklyQuest.show ) then
+        populateWeeklyQuestData( L["Weekly Quest"], tooltip, charList, weeklyQuestList );
     end
     if( self.config.profile.currency.show ) then
         populateCurrencyData( L["Currency"], tooltip, charList, currencyList );

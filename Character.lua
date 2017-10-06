@@ -73,7 +73,8 @@ local function checkExpiredLockouts()
             charData.worldBosses    = charData.worldBosses or {};
             charData.emissaries     = charData.emissaries or {};
             charData.currency       = charData.currency or {};
-        
+            charData.weeklyQuests   = charData.weeklyQuests or {};
+
             if( charData.instances ~= nil ) then
                 for instanceName, instanceData in next, charData.instances do
                     clearExpiredLockouts( instanceData );
@@ -88,6 +89,7 @@ local function checkExpiredLockouts()
             
             clearExpiredLockouts( charData.worldBosses );
             clearExpiredLockouts( charData.emissaries );
+            clearExpiredLockouts( charData.weeklyQuests );
             clearCurrencyQuests( charData.currency );
         end -- for charNdx, charData in next, characters
     end -- for realmName, charData in next, LockoutDb
@@ -123,6 +125,7 @@ function addon:Lockedout_GetCurrentCharData()
     self:Lockedout_BuildWorldBoss( realmName, charNdx );
     self:Lockedout_BuildCurrencyList( realmName, charNdx );
     self:Lockedout_BuildEmissary( realmName, charNdx );
+    self:Lockedout_BuildWeeklyQuests( realmName, charNdx );
     
     table.sort( LockoutDb ); -- sort the realms alphabetically
     

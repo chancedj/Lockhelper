@@ -9,10 +9,11 @@ local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- cache lua functions
 local print, type =                                -- variables
-      print, type                                -- lua functions
+      print, type                                  -- lua functions
+
 -- cache blizzard function/globals
-local GetCurrentRegion, RAID_CLASS_COLORS =                        -- variables
-      GetCurrentRegion, CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS; -- blizzard global table
+local GetCurrentRegion, GetServerTime, GetQuestResetTime, RAID_CLASS_COLORS =                        -- variables
+      GetCurrentRegion, GetServerTime, GetQuestResetTime, CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS; -- blizzard global table
 
 function addon:colorizeString( className, value )
     if( className == nil ) then return value; end
@@ -41,6 +42,10 @@ local MapRegionReset = {
     [4] = 4, -- TW
     [5] = 4  -- CN
 }
+
+function addon:getDailyLockoutDate()
+    return GetServerTime() + GetQuestResetTime();
+end
 
 function addon:getWeeklyLockoutDate()
     local secondsInDay = 24 * 60 * 60;
