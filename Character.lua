@@ -61,23 +61,6 @@ local function clearCurrencyQuests( dataTable )
     end
 end
 
-local function allCleared( ... )
-    local arg = { ... };
-
-    for i, v in ipairs( arg ) do
-        if( v ~= nil ) then
-            -- if this returns data, we still have data that's not expired
-            local key, data = next(v);
-            
-            if( data ~= nil ) then
-                return false;
-            end -- if( data ~= nil )
-        end;
-    end -- for i, v in ipairs( arg )
-
-    return true;
-end -- allCleared( arg, ... )
-
 local function checkExpiredLockouts()
     -- if we add a new element, it will be empty for the charData
     -- take care of this by exiting.
@@ -85,6 +68,12 @@ local function checkExpiredLockouts()
     
     for realmName, characters in next, LockoutDb do
         for charNdx, charData in next, characters do
+            -- initialize data if necessary
+            charData.instances      = charData.instances or {};
+            charData.worldBosses    = charData.worldBosses or {};
+            charData.emissaries     = charData.emissaries or {};
+            charData.currency       = charData.currency or {};
+        
             if( charData.instances ~= nil ) then
                 for instanceName, instanceData in next, charData.instances do
                     clearExpiredLockouts( instanceData );
@@ -99,13 +88,7 @@ local function checkExpiredLockouts()
             
             clearExpiredLockouts( charData.worldBosses );
             clearExpiredLockouts( charData.emissaries );
-            
-            local emptySet = allCleared( charData.instances,
-                                         charData.worldBosses );
-            
             clearCurrencyQuests( charData.currency );
-            
-            if( emptySet ) then characters[ charNdx ] = nil; end
         end -- for charNdx, charData in next, characters
     end -- for realmName, charData in next, LockoutDb
 end -- checkExpiredLockouts()
