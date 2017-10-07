@@ -37,10 +37,10 @@ end -- destroyDb
 -- tues for US, Wed for rest?
 local MapRegionReset = {
     [1] = 3, -- US
-    [2] = 4, -- KR
+    [2] = 5, -- KR
     [3] = 4, -- EU
-    [4] = 4, -- TW
-    [5] = 4  -- CN
+    [4] = 5, -- TW
+    [5] = 5  -- CN
 }
 
 function addon:getDailyLockoutDate()
