@@ -129,5 +129,5 @@ function addon:Lockedout_GetCurrentCharData()
     
     table.sort( LockoutDb ); -- sort the realms alphabetically
     
-    return realmName, playerData;
+    return realmName, charNdx, playerData;
 end -- Lockedout_GetCurrentCharData()

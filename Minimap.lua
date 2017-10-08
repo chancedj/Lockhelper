@@ -198,27 +198,31 @@ local function populateEmissaryData( header, tooltip, charList, emissaryList )
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
     for index, emissaryData in next, emissaryList do
         if( emissaryData.icon ) then
-            lineNum = tooltip:AddLine( emissaryData.icon .. " " .. emissaryData.name );
+            lineNum = tooltip:AddLine( emissaryData.icon .. " " .. emissaryData.displayName );
         else
-            lineNum = tooltip:AddLine( emissaryData.name );
+            lineNum = tooltip:AddLine( emissaryData.displayName );
         end
         
         for colNdx, charData in next, charList do
-            if (LockoutDb[ charData.realmName ] ~= nil) and
-               (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
-               (LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries[ index ] ~= nil) then
-                local emData = LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries[ index ];
+            local emissaries = LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries;
 
-                local displayText;
-                if( emData.completed ) then
-                    displayText = BOSS_KILL_TEXT
-                else
-                    displayText = emData.fullfilled .. "/" .. emData.required;
+            for i = 1, #emissaries do
+                local emData = emissaries[ i ];
+                
+                if (emData ~= nil) and ( emissaryData.name == emData.name ) then
+                    local displayText;
+                    if( emData.completed ) then
+                        displayText = BOSS_KILL_TEXT
+                    else
+                        displayText = emData.fullfilled .. "/" .. emData.required;
+                    end
+
+                    tooltip:SetCell( lineNum, colNdx + 1, displayText, nil, "CENTER" );
+                    break;
                 end
-
-                tooltip:SetCell( lineNum, colNdx + 1, displayText, nil, "CENTER" );
-                tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
-            end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
+            end
+                
+            tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
         end -- for colNdx, charData in next, charList
     end -- for currencyName, _ in next, currencyList
 
@@ -246,7 +250,7 @@ function addon:ShowInfo( frame )
         self.tooltip = nil;
     end -- if ( self.tooltip ~= nil )
 
-    local currRealmName, playerData = addon:Lockedout_GetCurrentCharData();
+    local currRealmName, currCharNdx, playerData = addon:Lockedout_GetCurrentCharData();
 
     -- Acquire a tooltip with 3 columns, respectively aligned to left, center and right
     local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
@@ -299,10 +303,11 @@ function addon:ShowInfo( frame )
                 
                 -- redundant since we always have the same 3 across all chars
                 -- populate once
-                if( #emissaryList == 0 ) then
+                if( currRealmName == realmName ) and ( currCharNdx == charNdx ) then
                     for ei, emData in next, charData.emissaries do
                         emissaryList[ ei ] = {
-                            name = "(+" .. (ei - 1) .. " Day) " .. emData.name,
+                            displayName = "(+" .. (ei - 1) .. " Day) " .. emData.name,
+                            name = emData.name,
                             icon = emData.icon
                         }
                     end
