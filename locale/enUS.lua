@@ -18,6 +18,7 @@ L["Character iLevels"]                  = "Character iLevels";
 L["Defeated"]                           = "Defeated";
 L["Available"]                          = "Available";
 L["Right-click for configuration menu"] = "Right-click for configuration menu";
+L["*Resets in"]                         = "*Resets in";
 
 -- configuration menu
 -- * headers

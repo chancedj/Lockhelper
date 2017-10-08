@@ -8,8 +8,8 @@ local addon = LibStub( "AceAddon-3.0" ):GetAddon( addonName );
 local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- cache lua functions
-local next, table =    -- variables
-      next, table    -- lua functions
+local next, table, SecondsToTime =    -- variables
+      next, table, SecondsToTime    -- lua functions
 
 -- Get a reference to the lib
 local LibQTip = LibStub( "LibQTip-1.0" )
@@ -54,9 +54,18 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                     local ln = 1;
                                                     tooltip:SetCell( ln, col, difficulty, nil, "CENTER" );
                                                     tooltip:SetLineColor( ln, 1, 1, 1, 1 );
+                                                    
+                                                    if( col == 2 ) then
+                                                        ln = tooltip:AddLine( );
+                                                    else
+                                                        ln = ln + 1;
+                                                    end
+
+                                                    tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
+                                                    tooltip:SetCell( ln, col, "|cFFFF0000" .. SecondsToTime( instanceData.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
                                                     for bossName, bossData in next, instanceData.bossData do
                                                         if( col == 2 ) then
-                                                            ln = tooltip:AddLine(  );
+                                                            ln = tooltip:AddLine( );
                                                         else
                                                             ln = ln + 1;
                                                         end -- if( col == 2 )

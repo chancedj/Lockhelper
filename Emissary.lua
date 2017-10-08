@@ -13,9 +13,9 @@ local next = -- variables
 
 -- cache blizzard function/globals
 local GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
-        GetQuestResetTime, SecondsToTime, GetServerTime =                               -- variables 
+        GetQuestResetTime, GetServerTime =                               -- variables 
       GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
-        GetQuestResetTime, SecondsToTime, GetServerTime                                 -- blizzard api
+        GetQuestResetTime, GetServerTime                                 -- blizzard api
 
 local EMISSARY_MAP_ID = 1014;
       
