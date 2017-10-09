@@ -141,8 +141,8 @@ local function populateWorldBossData( header, tooltip, charList, worldBossList )
                                             end -- function( data )
                 
                 tooltip:SetCell( lineNum, colNdx + 1, bossData.displayText, nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() bossData.displayTT( bossData ); end );    -- close out tooltip when leaving
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() bossData.deleteTT( bossData ); end );    -- open tooltip with info when entering cell.
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() bossData:displayTT( bossData ); end );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() bossData:deleteTT( bossData ); end );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
@@ -169,9 +169,35 @@ local function populateWeeklyQuestData( header, tooltip, charList, weeklyQuestLi
                (LockoutDb[ charData.realmName ][ charData.charNdx ].weeklyQuests[ questAbbr ] ~= nil) then
                 local questData = LockoutDb[ charData.realmName ][ charData.charNdx ].weeklyQuests[ questAbbr ];
                 
+                if( questData.resetDate ~= nil ) then
+                    questData.displayTT = function( data )
+                                                    local ttName = "loQlTT" .. questAbbr;
+                                                    local tt = LibQTip:Acquire( "LockedoutTooltip" );
+                                                    local tooltip = LibQTip:Acquire( ttName );
+                                                    
+                                                    tooltip:SetColumnLayout( 2 );
+                                                    local ln = tooltip:AddLine( );
+                                                    tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
+                                                    tooltip:SetCell( ln, 2, "|cFFFF0000" .. SecondsToTime( data.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
+                                                    
+                                                    tooltip:SmartAnchorTo( tt.lines[ lineNum ].cells[ colNdx + 1 ] );
+                                                    tooltip:Show();
+                                                end -- function( data )
+                    questData.deleteTT =  function( data )
+                                                    local ttName = "loQlTT" .. questAbbr;
+                                                    local tooltip = LibQTip:Acquire( ttName );
+                                                    
+                                                    LibQTip:Release( tooltip );
+                                                end -- function( data )
+                else
+                    -- display nothing if no resetdate is found.
+                    questData.displayTT = emptyFunction;
+                    questData.deleteTT = emptyFunction;
+                end
+                
                 tooltip:SetCell( lineNum, colNdx + 1, questData.displayText, nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", emptyFunction );    -- open tooltip with info when entering cell.
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() questData:displayTT( questData ); end );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() questData:deleteTT( questData ); end );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
