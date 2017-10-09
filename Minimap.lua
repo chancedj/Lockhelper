@@ -119,10 +119,30 @@ local function populateWorldBossData( header, tooltip, charList, worldBossList )
                (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
                (LockoutDb[ charData.realmName ][ charData.charNdx ].worldBosses[ bossName ] ~= nil) then
                 local bossData = LockoutDb[ charData.realmName ][ charData.charNdx ].worldBosses[ bossName ];
+
+                bossData.displayTT = function( data )
+                                                local ttName = "loWbTT" .. bossName;
+                                                local tt = LibQTip:Acquire( "LockedoutTooltip" );
+                                                local tooltip = LibQTip:Acquire( ttName );
+                                                
+                                                tooltip:SetColumnLayout( 2 );
+                                                local ln = tooltip:AddLine( );
+                                                tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
+                                                tooltip:SetCell( ln, 2, "|cFFFF0000" .. SecondsToTime( data.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
+                                                
+                                                tooltip:SmartAnchorTo( tt.lines[ lineNum ].cells[ colNdx + 1 ] );
+                                                tooltip:Show();
+                                            end -- function( data )
+                bossData.deleteTT =  function( data )
+                                                local ttName = "loWbTT" .. bossName;
+                                                local tooltip = LibQTip:Acquire( ttName );
+                                                
+                                                LibQTip:Release( tooltip );
+                                            end -- function( data )
                 
                 tooltip:SetCell( lineNum, colNdx + 1, bossData.displayText, nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", emptyFunction );    -- open tooltip with info when entering cell.
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() bossData.displayTT( bossData ); end );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() bossData.deleteTT( bossData ); end );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
