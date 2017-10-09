@@ -368,13 +368,13 @@ function addon:ShowInfo( frame )
     local realmLineNum;
     local charLineNum;
     
-    if( realmCount > 1 ) then -- show realm only when multiple are involved
+    if( realmCount > 1 ) and ( self.config.profile.general.showRealmHeader ) then -- show realm only when multiple are involved
         realmLineNum = tooltip:AddHeader( L[ "Realm" ] ); -- realm column
     end
     charLineNum  = tooltip:AddHeader( L[ "Character" ] ); -- char column
     -- add the characters and realms across the header
     for colNdx, char in next, charList do
-        if( realmCount > 1 ) then -- show realm only when multiple are involved
+        if( realmCount > 1 ) and ( self.config.profile.general.showRealmHeader ) then -- show realm only when multiple are involved
             tooltip:SetCell( realmLineNum, colNdx + 1, addon:colorizeString( char.className, char.realmName ), nil, "CENTER" );
         end
         local charData = LockoutDb[ char.realmName ][ char.charNdx ];

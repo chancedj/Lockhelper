@@ -49,8 +49,16 @@ function addon:getConfigOptions()
 			  set = function(info,val) self.config.profile.general.currentRealm = val; end,
 			  get = function(info) return self.config.profile.general.currentRealm end
 			},
-			showMinimapIcon = {
+            showRealmHeader = {
 			  order = 12,
+			  name = L["Show Realm"],
+			  desc = L["Show the realm header"],
+			  type = "toggle",
+			  set = function(info,val) self.config.profile.general.showRealmHeader = val; end,
+			  get = function(info) return self.config.profile.general.showRealmHeader end
+			},
+			showMinimapIcon = {
+			  order = 13,
 			  name = L["Hide Icon"],
 			  desc = L["Show Minimap Icon"],
 			  type = "toggle",
@@ -175,7 +183,8 @@ function addon:getDefaultOptions()
 				hide = false
 			},
 			general = {
-				currentRealm = false
+				currentRealm = false,
+                showRealmHeader = true
 			},
 			dungeon = {
 				show = true

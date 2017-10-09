@@ -24,6 +24,7 @@ L["*Resets in"]                         = "*Resets in";
 -- * headers
 L["General Options"]        = "General Options";
 L["Current Realm"]          = "Current Realm";
+L["Show Realm"]             = "Show Realm";
 L["Instance Options"]       = "Instance Options";
 L["Raid Options"]           = "Raid Options";
 L["World Boss Options"]     = "World Boss Options";
@@ -40,6 +41,7 @@ L["Show when dead"] = "Show when dead";
 -- * label descriptions
 L["Enables / disables the addon"]               = "Enables / disables the addon";
 L["Show characters from current realm only"]    = "Show characters from current realm only";
+L["Show the realm header"]                      = "Hide the realm header";
 L["Show Minimap Icon"]                          = "Show Minimap Icon";
 L["Show dungeon information"]                   = "Show dungeon information";
 L["Show raid information"]                      = "Show raid information";
