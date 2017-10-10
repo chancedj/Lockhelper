@@ -43,23 +43,56 @@ local MapRegionReset = {
     [5] = 5  -- CN
 }
 
+local weekdayRemap = {
+    [3] = {
+        [1] = 1,
+        [2] = 0,
+        [3] = 6,
+        [4] = 5,
+        [5] = 4,
+        [6] = 3,
+        [7] = 2,
+    },
+    [4] = {
+        [1] = 2,
+        [2] = 1,
+        [3] = 0,
+        [4] = 6,
+        [5] = 5,
+        [6] = 4,
+        [7] = 3,
+    },
+    [5] = {
+        [1] = 3,
+        [2] = 2,
+        [3] = 1,
+        [4] = 0,
+        [5] = 6,
+        [6] = 5,
+        [7] = 4,
+    },
+}
+
 function addon:getDailyLockoutDate()
     return GetServerTime() + GetQuestResetTime();
 end
 
 function addon:getWeeklyLockoutDate()
     local secondsInDay = 24 * 60 * 60;
-
-    local daysInweek, serverResetDay = 7, MapRegionReset[ GetCurrentRegion() ];
+    local serverResetDay = MapRegionReset[ GetCurrentRegion() ];
     local currentServerTime = GetServerTime();
-    local daysLefToReset = (daysInweek + serverResetDay - date( "*t", currentServerTime ).wday) % daysInweek
-    -- build next reset date
-    local nextResetTime = currentServerTime + GetQuestResetTime();
+    local daysLefToReset = weekdayRemap[ serverResetDay ][ date( "*t", currentServerTime ).wday ];
 
-    local weeklyResetTime = nextResetTime + (daysLefToReset * secondsInDay);
-    -- if we've already exceeded the expected lockout date, bump it a week
-    if( currentServerTime > weeklyResetTime ) then
-        weeklyResetTime = nextResetTime + (7 * secondsInDay);
+    local weeklyResetTime = addon:getDailyLockoutDate();
+    -- handle reset on day of reset (before vs after server reset)
+    if( daysLefToReset == 6 ) then
+        -- if they are diff, we've passed server reset time.  so push it a week.
+        if( date("%x", nextResetTime) ~= date("%x", currentServerTime) ) then
+            weeklyResetTime = nextResetTime + (daysLefToReset * secondsInDay);
+        end
+    else
+        weeklyResetTime = nextResetTime + (daysLefToReset * secondsInDay);
     end
+
     return weeklyResetTime
 end
