@@ -78,20 +78,21 @@ function addon:getDailyLockoutDate()
 end
 
 function addon:getWeeklyLockoutDate()
-    local secondsInDay = 24 * 60 * 60;
-    local serverResetDay = MapRegionReset[ GetCurrentRegion() ];
-    local currentServerTime = GetServerTime();
-    local daysLefToReset = weekdayRemap[ serverResetDay ][ date( "*t", currentServerTime ).wday ];
+    local secondsInDay      = 24 * 60 * 60;
+    local serverResetDay    = MapRegionReset[ GetCurrentRegion() ];
+    local daysLefToReset    = weekdayRemap[ serverResetDay ][ date( "*t", currentServerTime ).wday ];
 
-    local weeklyResetTime = addon:getDailyLockoutDate();
+    local currentServerTime = GetServerTime();
+    local weeklyResetTime   = addon:getDailyLockoutDate();
+
     -- handle reset on day of reset (before vs after server reset)
     if( daysLefToReset == 6 ) then
         -- if they are diff, we've passed server reset time.  so push it a week.
-        if( date("%x", nextResetTime) ~= date("%x", currentServerTime) ) then
-            weeklyResetTime = nextResetTime + (daysLefToReset * secondsInDay);
+        if( date("%x", weeklyResetTime) ~= date("%x", currentServerTime) ) then
+            weeklyResetTime = weeklyResetTime + (daysLefToReset * secondsInDay);
         end
     else
-        weeklyResetTime = nextResetTime + (daysLefToReset * secondsInDay);
+        weeklyResetTime = weeklyResetTime + (daysLefToReset * secondsInDay);
     end
 
     return weeklyResetTime
