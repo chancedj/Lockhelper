@@ -14,8 +14,68 @@ local next, table, SecondsToTime =    -- variables
 -- Get a reference to the lib
 local LibQTip = LibStub( "LibQTip-1.0" )
 
+local function addMainColorBanding( tt )
+    local resetnum = 0;
+    local opacLevel;
+    for i = 1, tt:GetLineCount() do
+        opacLevel = 0;
+        if( tt.lines[ i ].is_header ) then
+            resetnum = i % 2;
+            opacLevel = 0.3;
+        elseif( ( i + resetnum ) % 2 == 0 ) then
+            opacLevel = 0.1;
+        end
+        tt:SetLineColor( i, 1, 1, 1, opacLevel );
+    end -- for i = 1, tt:GetLineCount()
+end -- addMainColorBanding
+
+local function addPopupColorBanding( tt )
+    local opacLevel = 1;
+    tt:SetBackdropColor( 0, 0, 0, opacLevel );
+    for i = 1, tt:GetLineCount() do
+        tt:SetLineColor( i, 0, 0, 0, opacLevel );
+    end -- for i = 1, tt:GetLineCount()
+end -- addPopupColorBanding
+
+local function getAnchorPkt( groupName, suffix, data, lineNum, cellNum )
+    local pkt = {
+        groupName = groupName,
+        suffix = suffix,
+        data = data,
+        lineNum = lineNum,
+        cellNum = cellNum,
+        getTTName = function( self )
+                        return "loTT" .. self.groupName .. self.suffix;
+                    end
+    };
+    
+    return pkt;
+end
+
 local function emptyFunction()
 end
+
+local function displayReset( self )
+    local ttName = self.anchor:getTTName();
+    local tt = LibQTip:Acquire( "LockedoutTooltip" );
+    local tooltip = LibQTip:Acquire( ttName );
+    
+    tooltip:SetColumnLayout( 2 );
+    local ln = tooltip:AddLine( );
+    tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
+    tooltip:SetCell( ln, 2, "|cFFFF0000" .. SecondsToTime( self.anchor.data.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
+    
+    tooltip:SmartAnchorTo( tt.lines[ self.anchor.lineNum ].cells[ self.anchor.cellNum ] );
+    addPopupColorBanding( tooltip );
+    tooltip:Show();
+end -- function( data )
+
+local function closeTT( self )
+    local ttName = self.anchor:getTTName();
+    local tt = LibQTip:Acquire( ttName );
+
+    LibQTip:Release( tt );
+end -- function( data )
 
 local function populateInstanceData( header, tooltip, charList, instanceList )
     -- make sure it's not empty
@@ -39,8 +99,8 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                     data[ #data + 1 ] = instanceDetails.displayText;
                 end -- for difficulty, instanceDetails in next, instances
 
-                instanceDisplay.displayTT = function( data )
-                                                local ttName = "loInTT" .. instanceName;
+                instanceDisplay.displayTT = function( self )
+                                                local ttName = self.anchor:getTTName();
                                                 local tt = LibQTip:Acquire( "LockedoutTooltip" );
                                                 local tooltip = LibQTip:Acquire( ttName );
                                                 
@@ -48,7 +108,7 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                 
                                                 tooltip:SetColumnLayout( 1 );
                                                 tooltip:AddHeader( "Boss Name" );
-                                                for difficulty, instanceData in next, instances do
+                                                for difficulty, instanceData in next, self.anchor.data do
                                                     local col = tooltip:AddColumn( "CENTER" );
 
                                                     local ln = 1;
@@ -82,19 +142,17 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                     end -- for bossName, bossData in next, instanceData.bossData
                                                 end -- for difficulty, instanceDetails in next, instances
                                                 
-                                                tooltip:SmartAnchorTo( tt );
+                                                tooltip:SmartAnchorTo( tt.lines[ self.anchor.lineNum ].cells[ self.anchor.cellNum ] );
+                                                addPopupColorBanding( tooltip );
                                                 tooltip:Show();
                                             end -- function( data )
-                instanceDisplay.deleteTT =  function( data )
-                                                local ttName = "loInTT" .. instanceName;
-                                                local tooltip = LibQTip:Acquire( ttName );
-                                                
-                                                LibQTip:Release( tooltip );
-                                            end -- function( data )
+                instanceDisplay.deleteTT = closeTT;
+                instanceDisplay.anchor = getAnchorPkt( "in", instanceName, instances, lineNum, colNdx + 1 );
 
                 tooltip:SetCell( lineNum, colNdx + 1, addon:colorizeString( charData.className, table.concat( data, " " ) ), nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() instanceDisplay:displayTT( instances ); end );    -- open tooltip with info when entering cell.
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() instanceDisplay:deleteTT( instances ); end );    -- close out tooltip when leaving
+
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() instanceDisplay:displayTT( ); end );    -- open tooltip with info when entering cell.
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() instanceDisplay:deleteTT( ); end );    -- close out tooltip when leaving
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
@@ -120,29 +178,15 @@ local function populateWorldBossData( header, tooltip, charList, worldBossList )
                (LockoutDb[ charData.realmName ][ charData.charNdx ].worldBosses[ bossName ] ~= nil) then
                 local bossData = LockoutDb[ charData.realmName ][ charData.charNdx ].worldBosses[ bossName ];
 
-                bossData.displayTT = function( data )
-                                                local ttName = "loWbTT" .. bossName;
-                                                local tt = LibQTip:Acquire( "LockedoutTooltip" );
-                                                local tooltip = LibQTip:Acquire( ttName );
-                                                
-                                                tooltip:SetColumnLayout( 2 );
-                                                local ln = tooltip:AddLine( );
-                                                tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
-                                                tooltip:SetCell( ln, 2, "|cFFFF0000" .. SecondsToTime( data.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
-                                                
-                                                tooltip:SmartAnchorTo( tt.lines[ lineNum ].cells[ colNdx + 1 ] );
-                                                tooltip:Show();
-                                            end -- function( data )
-                bossData.deleteTT =  function( data )
-                                                local ttName = "loWbTT" .. bossName;
-                                                local tooltip = LibQTip:Acquire( ttName );
-                                                
-                                                LibQTip:Release( tooltip );
-                                            end -- function( data )
-                
+                local bossDisplay = {};
+                bossDisplay.displayTT  = displayReset;
+                bossDisplay.deleteTT   = closeTT;
+                bossDisplay.anchor     = getAnchorPkt( "wb", bossName, bossData, lineNum, colNdx + 1 );
+
                 tooltip:SetCell( lineNum, colNdx + 1, bossData.displayText, nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() bossData:displayTT( bossData ); end );    -- close out tooltip when leaving
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() bossData:deleteTT( bossData ); end );    -- open tooltip with info when entering cell.
+
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() bossDisplay:displayTT( ); end );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() bossDisplay:deleteTT( ); end );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
@@ -169,35 +213,22 @@ local function populateWeeklyQuestData( header, tooltip, charList, weeklyQuestLi
                (LockoutDb[ charData.realmName ][ charData.charNdx ].weeklyQuests[ questAbbr ] ~= nil) then
                 local questData = LockoutDb[ charData.realmName ][ charData.charNdx ].weeklyQuests[ questAbbr ];
                 
+                local questDisplay = {};
                 if( questData.resetDate ~= nil ) then
-                    questData.displayTT = function( data )
-                                                    local ttName = "loQlTT" .. questAbbr;
-                                                    local tt = LibQTip:Acquire( "LockedoutTooltip" );
-                                                    local tooltip = LibQTip:Acquire( ttName );
-                                                    
-                                                    tooltip:SetColumnLayout( 2 );
-                                                    local ln = tooltip:AddLine( );
-                                                    tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
-                                                    tooltip:SetCell( ln, 2, "|cFFFF0000" .. SecondsToTime( data.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
-                                                    
-                                                    tooltip:SmartAnchorTo( tt.lines[ lineNum ].cells[ colNdx + 1 ] );
-                                                    tooltip:Show();
-                                                end -- function( data )
-                    questData.deleteTT =  function( data )
-                                                    local ttName = "loQlTT" .. questAbbr;
-                                                    local tooltip = LibQTip:Acquire( ttName );
-                                                    
-                                                    LibQTip:Release( tooltip );
-                                                end -- function( data )
+                    questDisplay.anchor = getAnchorPkt( "ql", questAbbr, questData, lineNum, colNdx + 1 );
+                    questDisplay.displayTT = displayReset;
+                    questDisplay.deleteTT  = closeTT;
                 else
                     -- display nothing if no resetdate is found.
-                    questData.displayTT = emptyFunction;
-                    questData.deleteTT = emptyFunction;
+                    questDisplay.anchor = {};
+                    questDisplay.displayTT = emptyFunction;
+                    questDisplay.deleteTT = emptyFunction;
                 end
                 
                 tooltip:SetCell( lineNum, colNdx + 1, questData.displayText, nil, "CENTER" );
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() questData:displayTT( questData ); end );    -- close out tooltip when leaving
-                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() questData:deleteTT( questData ); end );    -- open tooltip with info when entering cell.
+
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() questDisplay:displayTT( ); end );    -- close out tooltip when leaving
+                tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() questDisplay:deleteTT( ); end );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
@@ -283,21 +314,6 @@ local function populateEmissaryData( header, tooltip, charList, emissaryList )
 
     tooltip:AddSeparator( );
 end
-
-local function addColorBanding( tt )
-    local resetnum = 0;
-    local opacLevel;
-    for i = 1, tt:GetLineCount() do
-        opacLevel = 0;
-        if( tt.lines[ i ].is_header ) then
-            resetnum = i % 2;
-            opacLevel = 0.3;
-        elseif( ( i + resetnum ) % 2 == 0 ) then
-            opacLevel = 0.1;
-        end
-        tt:SetLineColor( i, 1, 1, 1, opacLevel );
-    end -- for i = 1, tt:GetLineCount()
-end -- addColorBanding
 
 function addon:ShowInfo( frame )
     if ( self.tooltip ~= nil ) then
@@ -405,35 +421,33 @@ function addon:ShowInfo( frame )
         end
         local charData = LockoutDb[ char.realmName ][ char.charNdx ];
         local charDisplay = {};
-        charDisplay.displayTT = function( data )
+        charDisplay.displayTT = function( self )
                                     if ( charData.iLevel == nil ) then
                                         return;
                                     end
 
-                                    local ttName = "loChTT" .. charData.charName;
+                                    local ttName = self.anchor:getTTName();
                                     local tt = LibQTip:Acquire( "LockedoutTooltip" );
                                     local tooltip = LibQTip:Acquire( ttName );
                                     tooltip:SetColumnLayout( 2 );
                                     local line = tooltip:AddHeader( "" );
                                     tooltip:SetLineColor( line, 1, 1, 1, 1 );
                                     tooltip:SetCell( line, 1, L["Character iLevels"], 2 );
-                                    for k, p in next, charData.iLevel do
+                                    for k, p in next, self.anchor.data.iLevel do
                                         tooltip:AddLine( k, p );
                                     end -- for k, p in next, charData.iLevel
 
-                                    tooltip:SmartAnchorTo( tt );
+                                    tooltip:SmartAnchorTo( tt.lines[ self.anchor.lineNum ].cells[ self.anchor.cellNum ] );
+                                    addPopupColorBanding( tooltip );
                                     tooltip:Show();
                                 end -- function( data )
-        charDisplay.deleteTT =  function( data )
-                                    local ttName = "loChTT" .. charData.charName;
-                                    local tooltip = LibQTip:Acquire( ttName );
-                                    
-                                    LibQTip:Release( tooltip );
-                                end -- function( data )
+        charDisplay.deleteTT = closeTT;
+        charDisplay.anchor = getAnchorPkt( "ch", charData.charName, charData, charLineNum, colNdx + 1 );
 
         tooltip:SetCell( charLineNum, colNdx + 1, addon:colorizeString( char.className, char.charName ), nil, "CENTER" );
-        tooltip:SetCellScript( charLineNum, colNdx + 1, "OnEnter", function() charDisplay:displayTT( charData ); end ); -- close out tooltip when leaving
-        tooltip:SetCellScript( charLineNum, colNdx + 1, "OnLeave", function() charDisplay:deleteTT( charData ); end );     -- close out tooltip when leaving
+
+        tooltip:SetCellScript( charLineNum, colNdx + 1, "OnEnter", function() charDisplay:displayTT( ); end ); -- close out tooltip when leaving
+        tooltip:SetCellScript( charLineNum, colNdx + 1, "OnLeave", function() charDisplay:deleteTT( ); end );     -- close out tooltip when leaving
     end -- for colNdx, char in next, charList
 
     tooltip:AddSeparator( );
@@ -466,7 +480,7 @@ function addon:ShowInfo( frame )
     tooltip:SmartAnchorTo( frame );
     tooltip:SetAutoHideDelay( 0.25, frame );
 
-    addColorBanding( tooltip );
+    addMainColorBanding( tooltip );
     
     -- Show it, et voilà !
     tooltip:Show();

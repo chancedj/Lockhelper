@@ -13,9 +13,9 @@ local next = -- variables
 
 -- cache blizzard function/globals
 local EJ_GetCurrentTier, EJ_SelectTier, EJ_GetInstanceByIndex, EJ_GetEncounterInfoByIndex, IsQuestFlaggedCompleted,
-        READY_CHECK_READY_TEXTURE, IsQuestActive =    -- variables 
+        READY_CHECK_READY_TEXTURE, IsQuestActive =          -- variables 
       EJ_GetCurrentTier, EJ_SelectTier, EJ_GetInstanceByIndex, EJ_GetEncounterInfoByIndex, IsQuestFlaggedCompleted,
-        READY_CHECK_READY_TEXTURE, C_TaskQuest.IsActive    -- blizzard api
+        READY_CHECK_READY_TEXTURE, C_TaskQuest.IsActive     -- blizzard api
 
 -- Blizzard api cannot link npc id's to world quests, so we have to hardcode
 local WORLD_BOSS_LIST = {
@@ -44,7 +44,7 @@ local WORLD_BOSS_LIST = {
     [1770] = { instanceId=822, questId=42819, bossName="Humongris" },
     [1774] = { instanceId=822, questId=43193, bossName="Calamir" },
     [1783] = { instanceId=822, questId=43513, bossName="Na'zak the Fiend" },
-    [1789] = { instanceId=822, questId=43448, bossName="Drugon the Frostblood"    },
+    [1789] = { instanceId=822, questId=43448, bossName="Drugon the Frostblood" },
     [1790] = { instanceId=822, questId=43512, bossName="Ana-Mouz" },
     [1795] = { instanceId=822, questId=43985, bossName="Flotsam" },
     [1796] = { instanceId=822, questId=44287, bossName="Withered J'im" },
@@ -59,7 +59,7 @@ local WORLD_BOSS_LIST = {
     [2012] = { instanceId=959, questId=49166, bossName="Inquisitor Meto" },
     [2013] = { instanceId=959, questId=49165, bossName="Occularus" }, -- unverified
     [2014] = { instanceId=959, questId=49171, bossName="Sotanathor" },
-    [2015] = { instanceId=959, questId=49168, bossName="Pit Lord Vilemus" } -- unverified
+    [2015] = { instanceId=959, questId=49168, bossName="Pit Lord Vilemus" }
 }
 
 function CheckForMissingMappings()
