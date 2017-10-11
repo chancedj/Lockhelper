@@ -260,11 +260,10 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
 
                 local displayText = "";
                 if( currData.count ~= nil ) then
-                    displayText = "(" .. addon:shortenAmount( currData.count );
+                    displayText = addon:shortenAmount( currData.count );
                     if( currData.maximum > 0 ) then
                         displayText = displayText .. "/" .. addon:shortenAmount( currData.maximum );
                     end
-                    displayText = displayText .. ")";
                     
                     if( currData.bonus ~= nil ) then
                         displayText = displayText .. "(" .. table.concat( currData.bonus, "/" ) .. ")";
