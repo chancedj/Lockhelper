@@ -22,6 +22,11 @@ function addon:getConfigOptions()
     end
     --]]
     
+    local currencyOptions = {
+                                ["short"] = "Short",
+                                ["long"] = "Long"
+                            };
+    
 	local configOptions = {
 		type = "group",
 		name = addonName,
@@ -166,6 +171,16 @@ function addon:getConfigOptions()
 			  type = "toggle",
 			  set = function(info,val) self.config.profile.currency.show = val; end,
 			  get = function(info) return self.config.profile.currency.show end
+			},
+			currencyShorten = {
+			  order = 102,
+			  name = L["Currency Display"],
+			  desc = L["Configures currency display"],
+			  type = "select",
+              style = "dropdown",
+              values = currencyOptions,
+			  set = function(info,val) self.config.profile.currency.display = val; end,
+			  get = function(info) return self.config.profile.currency.display end
 			}
 		}
 	};
@@ -197,7 +212,8 @@ function addon:getDefaultOptions()
                 showKilledOnly = true
 			},
 			currency = {
-				show = true
+				show = true,
+                display = "long"
 			},
             emissary = {
                 show = true

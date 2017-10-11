@@ -57,12 +57,14 @@ local shortMap = {
         }
 }
 
-local function shortenAmount( amount )
+function addon:shortenAmount( amount )
     local result = amount
 
-    for _, map in next, shortMap do
-        if( amount > map.limit ) then
-            return strfmt( map.fmt, amount / map.limit );
+    if( self.config.profile.currency.display == "short" ) then
+        for _, map in next, shortMap do
+            if( amount > map.limit ) then
+                return strfmt( map.fmt, amount / map.limit );
+            end
         end
     end
     
@@ -80,15 +82,13 @@ function addon:Lockedout_BuildCurrencyList( realmName, charNdx )
         if( not isHeader ) and ( not isUnused ) then
             currency[ name ] = {}
             currency[ name ].icon = "|T" .. icon .. ":0|t";
-            if( maximum > 0 ) then
-                currency[ name ].displayText = shortenAmount( count ) .. "/" .. shortenAmount( maximum );
-            else
-                currency[ name ].displayText = shortenAmount( count );
-            end
+            currency[ name ].count = count;
+            currency[ name ].maximum = maximum;
 
             local questList = BONUS_ROLL_QUESTID[ name ];
+            local bonus = nil;
             if( questList ~= nil ) then
-                local bonus = {};
+                bonus = {};
                 for _, questGroup in next, questList do
                     local bonusCompleted = 0;
                     for _, questId in next, questGroup do
@@ -99,9 +99,8 @@ function addon:Lockedout_BuildCurrencyList( realmName, charNdx )
 
                     bonus[ #bonus + 1 ] = bonusCompleted;
                 end
-                currency[ name ].resetDate = calculatedResetDate;
-                currency[ name ].displayTextAddl = "(" .. table.concat( bonus, "/" ) .. ")";
             end
+            currency[ name ].bonus = bonus;
         end
     end
 

@@ -19,6 +19,7 @@ L["Defeated"]                           = "Defeated";
 L["Available"]                          = "Available";
 L["Right-click for configuration menu"] = "Right-click for configuration menu";
 L["*Resets in"]                         = "*Resets in";
+L["Currency Display"]                   = "Currency Display";
 
 -- configuration menu
 -- * headers
@@ -48,6 +49,7 @@ L["Show raid information"]                      = "Show raid information";
 L["Show world boss information"]                = "Show world boss information";
 L["Show in list only when killed"]              = "Show in list only when killed";
 L["Show currency information"]                  = "Show currency information";
+L["Configures currency display"]                = "Configures currency display";
 L["Show Emissary Information"]                  = "Show Emissary Information";
 L["Show weekly quest information"]              = "Show weekly quest information";
 

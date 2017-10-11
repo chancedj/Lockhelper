@@ -40,7 +40,7 @@ local function getCharIndex( characters, search_charName )
 end -- getCharIndex()
 
 local function clearExpiredLockouts( dataTable )
-    if( dataTable == ni ) then return; end
+    if( dataTable == nil ) then return; end
     local currentServerTime = GetServerTime();
     
     for key, data in next, dataTable do
@@ -51,12 +51,14 @@ local function clearExpiredLockouts( dataTable )
 end -- clearExpiredLockouts()
 
 local function clearCurrencyQuests( dataTable )
-    if( dataTable == ni ) then return; end
+    if( dataTable == nil ) then return; end
     local currentServerTime = GetServerTime();
 
     for _, currData in next, dataTable do
-        if( currData.resetDate ~= nil ) and ( currData.resetDate < currentServerTime ) then
-            currData.displayTextAddl = "(0)";
+        currData.displayText = nil;
+        currData.displayAddlText = nil;
+        if( currData.resetDate ~= nil) and ( currData.resetDate < currentServerTime ) then
+            currData.bonus = {};
         end
     end
 end

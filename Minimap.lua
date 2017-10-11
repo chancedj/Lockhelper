@@ -257,10 +257,15 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
                (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
                (LockoutDb[ charData.realmName ][ charData.charNdx ].currency[ currencyName ] ~= nil) then
                 local currData = LockoutDb[ charData.realmName ][ charData.charNdx ].currency[ currencyName ];
+
+                local displayText = "(" .. addon:shortenAmount( currData.count );
+                if( currData.maximum > 0 ) then
+                    displayText = displayText .. "/" .. addon:shortenAmount( currData.maximum );
+                end
+                displayText = displayText .. ")";
                 
-                local displayText = currData.displayText;
-                if( currData.displayTextAddl ~= nil ) then
-                    displayText = displayText .. currData.displayTextAddl;
+                if( currData.bonus ~= nil ) then
+                    displayText = displayText .. "(" .. table.concat( currData.bonus, "/" ) .. ")";
                 end
                 tooltip:SetCell( lineNum, colNdx + 1, addon:colorizeString( charData.className, displayText ), nil, "CENTER" );
                 tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
