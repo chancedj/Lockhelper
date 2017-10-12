@@ -263,13 +263,19 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
                     displayText = addon:shortenAmount( currData.count );
                     if( currData.maximum > 0 ) then
                         displayText = displayText .. "/" .. addon:shortenAmount( currData.maximum );
+
+                        if( currData.count == currData.maximum ) then
+                            displayText = "|cFFFF0000" .. displayText .. "|r";
+                        else
+                            displayText = "|cFF00FF00" .. displayText .. "|r";
+                        end
                     end
                     
                     if( currData.bonus ~= nil ) then
                         displayText = displayText .. "(" .. table.concat( currData.bonus, "/" ) .. ")";
                     end
                 end
-                tooltip:SetCell( lineNum, colNdx + 1, addon:colorizeString( charData.className, displayText ), nil, "CENTER" );
+                tooltip:SetCell( lineNum, colNdx + 1, displayText, nil, "CENTER" );
                 tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", emptyFunction );    -- close out tooltip when leaving
                 tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", emptyFunction );    -- open tooltip with info when entering cell.
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
