@@ -13,9 +13,9 @@ local next = -- variables
 
 -- cache blizzard function/globals
 local UnitClass, GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID, GetSpellCooldown
-        , GetTalentTreeIDsByClassID, GetTalentTreeInfoForID =                       -- variables 
+        , GetServerTime, GetTime, GetTalentTreeIDsByClassID, GetTalentTreeInfoForID =                       -- variables 
       UnitClass, GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID, GetSpellCooldown
-        , C_Garrison.GetTalentTreeIDsByClassID, C_Garrison.GetTalentTreeInfoForID   -- blizzard api
+        , GetServerTime, GetTime, C_Garrison.GetTalentTreeIDsByClassID, C_Garrison.GetTalentTreeInfoForID   -- blizzard api
 
 local BOSS_KILL_TEXT = "|T" .. READY_CHECK_READY_TEXTURE .. ":0|t";
 local function checkBlingtron( self )
@@ -40,7 +40,7 @@ local function checkInstantQuests( self )
     local talentTreeIDs = GetTalentTreeIDsByClassID(LE_GARRISON_TYPE_7_0, classType)
     
     -- not working properly, so disable for now.
-    if( talentTreeIDs ) and ( false ) then
+    if( talentTreeIDs ) then
         local _, treeID = next(talentTreeIDs);
         local _, _, tree = GetTalentTreeInfoForID( treeID );
         
@@ -52,7 +52,7 @@ local function checkInstantQuests( self )
                         
                         -- when enabled == 1, it's not ready, meaning it's on cooldown
                         if( start > 0 ) and ( enabled == 1 ) then
-                            return start + duration, true, BOSS_KILL_TEXT;
+                            return GetServerTime() + ((start + duration) - GetTime()), true, BOSS_KILL_TEXT;
                         end
                         
                         break;
@@ -85,13 +85,13 @@ function addon:Lockedout_BuildWeeklyQuests( realmName, charNdx )
             indivQuestData.resetDate = resetDate;
         end
 
-        weeklyQuests[ questData.name ] = indivQuestData;
+        weeklyQuests[ abbr ] = indivQuestData;
         if( questData.copyAccountWide ) then
             -- blingtron is account bound, so we copy across the accounts
             for realmName, characters in next, LockoutDb do
                 for charNdx, charData in next, characters do
                     charData.weeklyQuests = charData.weeklyQuests or {};
-                    charData.weeklyQuests[ questData.name ] = indivQuestData;
+                    charData.weeklyQuests[ abbr ] = indivQuestData;
                 end
             end
         end
