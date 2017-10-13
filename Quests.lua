@@ -36,13 +36,11 @@ local function checkBlingtron( self )
 end
 
 local function checkInstantQuests( self )
-    -- not working, disable for now.
-    return 0, false, nil;
-
     local _, _, classType = UnitClass( "player" );
     local talentTreeIDs = GetTalentTreeIDsByClassID(LE_GARRISON_TYPE_7_0, classType)
     
-    if( talentTreeIDs ) then
+    -- not working properly, so disable for now.
+    if( talentTreeIDs ) and ( false ) then
         local _, treeID = next(talentTreeIDs);
         local _, _, tree = GetTalentTreeInfoForID( treeID );
         
@@ -54,7 +52,7 @@ local function checkInstantQuests( self )
                         
                         -- when enabled == 1, it's not ready, meaning it's on cooldown
                         if( start > 0 ) and ( enabled == 1 ) then
-                            return GetServerTime() + (GetTime() - start) + duration, true, BOSS_KILL_TEXT;
+                            return start + duration, true, BOSS_KILL_TEXT;
                         end
                         
                         break;
