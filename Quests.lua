@@ -77,20 +77,21 @@ function addon:Lockedout_BuildWeeklyQuests( realmName, charNdx )
     for abbr, questData in next, QUEST_LIBRARY do
         local resetDate, completed, displayText = questData:checkStatus();
 
+        local indivQuestData = nil;
         if( completed ) then
-            local indivQuestData = {};
+            indivQuestData = {};
             indivQuestData.name = questData.name;
             indivQuestData.displayText = displayText;
             indivQuestData.resetDate = resetDate;
+        end
 
-            weeklyQuests[ questData.name ] = indivQuestData;
-            if( questData.copyAccountWide ) then
-                -- blingtron is account bound, so we copy across the accounts
-                for realmName, characters in next, LockoutDb do
-                    for charNdx, charData in next, characters do
-                        charData.weeklyQuests = charData.weeklyQuests or {};
-                        charData.weeklyQuests[ questData.name ] = indivQuestData;
-                    end
+        weeklyQuests[ questData.name ] = indivQuestData;
+        if( questData.copyAccountWide ) then
+            -- blingtron is account bound, so we copy across the accounts
+            for realmName, characters in next, LockoutDb do
+                for charNdx, charData in next, characters do
+                    charData.weeklyQuests = charData.weeklyQuests or {};
+                    charData.weeklyQuests[ questData.name ] = indivQuestData;
                 end
             end
         end
