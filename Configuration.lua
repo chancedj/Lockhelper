@@ -271,6 +271,16 @@ function addon:OpenConfigDialog( button )
 		InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #1
 		InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #2
 	end
+    
+    --[[ this helps to build the currency table
+    for ndx=1, 2000 do
+        local name = GetCurrencyInfo( ndx );
+        
+        if( name ~= nil ) and ( name ~= "" ) then
+            print( "{ [" .. ndx .. "] = { currencyID=" .. ndx .. ", getName=function() return '' end, expansionLevel=1 } }, -- " .. name );
+        end
+    end
+    --]]
 end
 
 function addon:FullCharacterRefresh()
