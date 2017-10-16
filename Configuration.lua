@@ -148,13 +148,13 @@ function addon:getConfigOptions()
             },
             weeklyQuestHeader={
 			  order = 60,
-			  name = L["Weekly Quest Options"],
+			  name = L["Repeatable Quest Options"],
 			  type = "header",
             },
             weeklyQuestShow = {
 			  order = 61,
 			  name = L["Show"],
-			  desc = L["Show weekly quest information"],
+			  desc = L["Show repeatable quest information"],
 			  type = "toggle",
 			  set = function(info,val) self.config.profile.weeklyQuest.show = val; end,
 			  get = function(info) return self.config.profile.weeklyQuest.show end

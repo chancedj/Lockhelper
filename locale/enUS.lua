@@ -13,7 +13,7 @@ L["Raid"]                               = "Raid";
 L["World Boss"]                         = "World Boss";
 L["Currency"]                           = "Currency";
 L["Emissary"]                           = "Emissary";
-L["Weekly Quest"]                       = "Weekly Quest";
+L["Repeatable Quest"]                   = "Repeatable Quest";
 L["Character iLevels"]                  = "Character iLevels";
 L["Defeated"]                           = "Defeated";
 L["Available"]                          = "Available";
@@ -23,15 +23,15 @@ L["Currency Display"]                   = "Currency Display";
 
 -- configuration menu
 -- * headers
-L["General Options"]        = "General Options";
-L["Current Realm"]          = "Current Realm";
-L["Show Realm"]             = "Show Realm";
-L["Instance Options"]       = "Instance Options";
-L["Raid Options"]           = "Raid Options";
-L["World Boss Options"]     = "World Boss Options";
-L["Currency Options"]       = "Currency Options";
-L["Emissary Options"]       = "Emissary Options";
-L["Weekly Quest Options"]   = "Weekly Quest Options";
+L["General Options"]            = "General Options";
+L["Current Realm"]              = "Current Realm";
+L["Show Realm"]                 = "Show Realm";
+L["Instance Options"]           = "Instance Options";
+L["Raid Options"]               = "Raid Options";
+L["World Boss Options"]         = "World Boss Options";
+L["Currency Options"]           = "Currency Options";
+L["Emissary Options"]           = "Emissary Options";
+L["Repeatable Quest Options"]   = "Repeatable Quest Options";
 
 -- * labels
 L["Enable"]         = "Enable";
@@ -51,7 +51,7 @@ L["Show in list only when killed"]              = "Show in list only when killed
 L["Show currency information"]                  = "Show currency information";
 L["Configures currency display"]                = "Configures currency display";
 L["Show Emissary Information"]                  = "Show Emissary Information";
-L["Show weekly quest information"]              = "Show weekly quest information";
+L["Show repeatable quest information"]          = "Show repeatable quest information";
 
 -- difficulty mapping full
 L["Unknown"]    = "Unknown";

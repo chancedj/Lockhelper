@@ -479,7 +479,7 @@ function addon:ShowInfo( frame )
         populateEmissaryData( L["Emissary"], tooltip, charList, emissaryList );
     end
     if( self.config.profile.weeklyQuest.show ) then
-        populateWeeklyQuestData( L["Weekly Quest"], tooltip, charList, weeklyQuestList );
+        populateWeeklyQuestData( L["Repeatable Quest"], tooltip, charList, weeklyQuestList );
     end
     if( self.config.profile.currency.show ) then
         populateCurrencyData( L["Currency"], tooltip, charList, currencyList );
