@@ -13,58 +13,97 @@ local next = -- variables
 
 -- cache blizzard function/globals
 local GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
-        GetQuestResetTime, GetServerTime =                               -- variables 
+        GetQuestResetTime, GetServerTime, mfloor =                               -- variables 
       GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID,
-        GetQuestResetTime, GetServerTime                                 -- blizzard api
+        GetQuestResetTime, GetServerTime, math.floor                             -- blizzard api
 
 local EMISSARY_MAP_ID = 1014;
+local EMISSARY_LIST = {
+    "48642", -- argussian reach
+    "48641", -- armies of the legionfall
+    "48639", -- armies of the light
+    "42420", -- court of farondis
+    "42233", -- highmountain tribes
+    "42170", -- the dreamweavers
+    "43179", -- kirin tor of dalaran
+    "42421", -- the nightfallen
+    "42234", -- the valajar   
+    "42422" -- the wardens
+}
 
-      
+local function copyEmissaryData( from, to )
+    to.name       = from.name;
+    to.day        = from.day;
+    to.required   = from.fullfilled; -- set required to fulfilled.  we're only copying DONE data - so fulfilled and required need to be equal.
+    to.fullfilled = from.fullfilled;
+    to.resetDate  = from.resetDate;
+end
+
 function addon:Lockedout_BuildEmissary( realmName, charNdx )
-    local emissaries = {}; -- initialize world boss table;
+    local emissaries = LockoutDb[ realmName ][ charNdx ].emissaries or {}; -- initialize world boss table;
     local dayCalc = 24 * 60 * 60;
-    
-    local bounties = GetQuestBountyInfoForMapID( EMISSARY_MAP_ID );
 
-    local test = { };
-    
-    table.insert( test, "48642" ); -- argussian reach
-    table.insert( test, "48641" ); -- armies of the legionfall
-    table.insert( test, "48639" ); -- armies of the light
-    table.insert( test, "42420" ); -- court of farondis
-    table.insert( test, "42233" ); -- highmountain tribes
-    table.insert( test, "42170" ); -- the dreamweavers
-    table.insert( test, "43179" ); -- kirin tor of dalaran
-    table.insert( test, "42421" ); -- the nightfallen
-    table.insert( test, "42234" ); -- the valajar   
-    table.insert( test, "42422" ); -- the wardens
-    ---[[
-    for ndx, questId in next, test do
-        local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes( questId );
-        print( "[" .. ndx .. "] QuestId: " .. questId .. " timeleft: " .. SecondsToTime( timeleft * 60 ) );
-        local a = GetQuestLogIndexByID( questId );
-        
-        print( "|cffffff00|Hquest:" .. questId .. "|h[%%s]|h|r" );
+    for _, questID in next, EMISSARY_LIST do
+        ---[[
+        local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes( questID );
+        if( timeleft ~= nil ) and ( timeleft > 0 ) then
+            local day = mfloor( timeleft * 60 / dayCalc );
+            local emissaryData = emissaries[ questID ] or {};
+            local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questID, 1, false );
+            local title = GetQuestLogTitle( GetQuestLogIndexByID( questID ) );
+            
+            emissaryData.name       = title;
+            emissaryData.day        = day;
+            emissaryData.required   = numRequired;
+            emissaryData.fullfilled = numFulfilled;
+            emissaryData.isComplete = finished;
+            emissaryData.resetDate  = GetServerTime() + GetQuestResetTime() + (day * dayCalc);
+            
+            emissaries[ questID ] = emissaryData;
+        elseif( IsQuestFlaggedCompleted( questID ) ) and 
+              ( ( emissaries[ questID ] == nil ) or ( emissaries[ questID ].isComplete ~= true ) ) then
+            local emissaryData = emissaries[ questID ] or {};
+
+            emissaryData.name       = nil;
+            emissaryData.day        = 0;
+            emissaryData.required   = 0;
+            emissaryData.fullfilled = 0;
+            emissaryData.isComplete = true;
+            emissaryData.resetDate  = GetServerTime() + GetQuestResetTime();
+            
+            emissaries[ questID ] = emissaryData;
+        end
+        --]]
     end
-    
-    local b = L["booger"];
-    --]]
-    for i = 1, #bounties do
-        local questId = bounties[ i ].questID;
-        local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questId, 1, false )
-        local title = GetQuestLogTitle( GetQuestLogIndexByID( questId ) );
-        
-        local emissary = {
-            name = title,
-            fullfilled = numFulfilled,
-            required = numRequired,
-            isComplete = finished,
-            icon = "|T" .. bounties[ i ].icon .. ":0|t",
-            resetDate = GetServerTime() + GetQuestResetTime() + ((i - 1) * dayCalc);
-        };
-        
-        emissaries[ #emissaries + 1 ] = emissary;
-    end -- for i = 1, #bounties do
+
+    -- fix data that cannot be filled in on characters missing the emissary data
+    -- copy it from other characters that know the current status of the quests.
+    for questID, emissaryData in next, emissaries do
+        local updated = false;
+
+        -- update across empty buckets
+        for rk, r in next, LockoutDb do
+            for ck, c in next, r do
+                -- skip yourself!
+                if( realmName ~= rk ) and ( ck ~= charNdx ) then
+                    if( emissaryData.name == nil ) then
+                        if( c.emissaries ~= nil ) and ( c.emissaries[ questID ] ~= nil) and ( c.emissaries[ questID ].name ~= nil ) then
+                            local copyFrom  = c.emissaries[ questID ];
+                            copyEmissaryData( copyFrom, emissaryData );
+                            updated = true;
+                            break;
+                        end
+                    elseif ( c.emissaries ~= nil ) and ( c.emissaries[ questID ] ~= nil) and ( c.emissaries[ questID ].name == nil ) then
+                        local copyTo  = c.emissaries[ questID ];
+                        copyEmissaryData( emissaryData, copyTo );
+                        updated = true;
+                        break;
+                    end
+                end
+            end
+            if updated then break; end;
+        end
+    end
     
     LockoutDb[ realmName ][ charNdx ].emissaries = emissaries;
 end -- Lockedout_BuildEmissary()

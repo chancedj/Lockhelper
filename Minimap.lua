@@ -295,32 +295,25 @@ local function populateEmissaryData( header, tooltip, charList, emissaryList )
     local lineNum = tooltip:AddLine( );
     tooltip.lines[ lineNum ].is_header = true;
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
-    for index, emissaryData in next, emissaryList do
-        if( emissaryData.icon ) then
-            lineNum = tooltip:AddLine( emissaryData.icon .. " " .. emissaryData.displayName );
-        else
-            lineNum = tooltip:AddLine( emissaryData.displayName );
-        end
+    for _, emissaryData in next, emissaryList do
+        lineNum = tooltip:AddLine( emissaryData.displayName );
         
         for colNdx, charData in next, charList do
-            local emissaries = LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries;
-
-            for i = 1, #emissaries do
-                local emData = emissaries[ i ];
-                
-                if (emData ~= nil) and ( emissaryData.name == emData.name ) then
+            if( emissaryData.questID ~= nil ) then
+                if (LockoutDb[ charData.realmName ] ~= nil) and
+                   (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
+                   (LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries[ emissaryData.questID ] ~= nil) then
+                    local emData = LockoutDb[ charData.realmName ][ charData.charNdx ].emissaries[ emissaryData.questID ];
                     local displayText;
-                    if( emData.completed ) then
+                    if( emData.isComplete ) then
                         displayText = BOSS_KILL_TEXT
                     else
                         displayText = emData.fullfilled .. "/" .. emData.required;
                     end
 
                     tooltip:SetCell( lineNum, colNdx + 1, displayText, nil, "CENTER" );
-                    break;
                 end
             end
-                
             tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
         end -- for colNdx, charData in next, charList
     end -- for currencyName, _ in next, currencyList
@@ -346,7 +339,7 @@ function addon:ShowInfo( frame )
     local raidList = {};
     local worldBossList = {};
     local currencyList = {};
-    local emissaryList = {};
+    local emissaryList = { {}, {}, {} }; -- initialize with 3
     local weeklyQuestList = {};
 
     -- get list of characters and realms for the horizontal
@@ -385,17 +378,17 @@ function addon:ShowInfo( frame )
                     weeklyQuestList[ questAbbr ] = questData.name;
                 end
                 
-                -- redundant since we always have the same 3 across all chars
-                -- populate once
-                if( currRealmName == realmName ) and ( currCharNdx == charNdx ) then
-                    for ei, emData in next, charData.emissaries do
-                        emissaryList[ ei ] = {
-                            displayName = "(+" .. (ei - 1) .. " Day) " .. emData.name,
+                ---[[
+                for questID, emData in next, charData.emissaries do
+                    if( emData.name ~= nil ) then
+                        emissaryList[ emData.day + 1 ] = {
+                            displayName = "(+" .. emData.day .. " Day) " .. emData.name,
                             name = emData.name,
-                            icon = emData.icon
+                            questID = questID
                         }
                     end
                 end
+                --]]
             end -- for charName, instances in next, characters
         end
     end -- for realmName, characters in next, LockoutDb
