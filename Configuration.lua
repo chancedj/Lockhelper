@@ -253,6 +253,7 @@ function addon:OnInitialize()
     -- events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD", "FullCharacterRefresh" );
     self:RegisterEvent( "BOSS_KILL", "FullCharacterRefresh" );
+    self:RegisterEvent( "UNIT_QUEST_LOG_CHANGED", "FullCharacterRefresh" );
 end
 
 function addon:ChatCommand()

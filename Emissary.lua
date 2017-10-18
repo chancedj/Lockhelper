@@ -54,20 +54,22 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             
             emissaryData.name       = title;
             emissaryData.day        = day;
-            emissaryData.required   = numRequired;
             emissaryData.fullfilled = numFulfilled;
+            emissaryData.required   = numRequired;
             emissaryData.isComplete = finished;
             emissaryData.resetDate  = GetServerTime() + GetQuestResetTime() + (day * dayCalc);
             
             emissaries[ questID ] = emissaryData;
         elseif( IsQuestFlaggedCompleted( questID ) ) and 
               ( ( emissaries[ questID ] == nil ) or ( emissaries[ questID ].isComplete ~= true ) ) then
+
+            print( "messing with completed quests!?" );
             local emissaryData = emissaries[ questID ] or {};
 
-            emissaryData.name       = nil;
-            emissaryData.day        = 0;
-            emissaryData.required   = 0;
-            emissaryData.fullfilled = 0;
+            emissaryData.name       = emissaryData.name or nil;
+            emissaryData.day        = emissaryData.day or 0;
+            emissaryData.fullfilled = emissaryData.fullfilled or 0;
+            emissaryData.required   = emissaryData.fullfilled or 0;
             emissaryData.isComplete = true;
             emissaryData.resetDate  = GetServerTime() + GetQuestResetTime();
             
