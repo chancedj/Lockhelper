@@ -13,14 +13,8 @@ local next, strfmt =            -- variables
       next, string.format       -- lua functions
 
 -- cache blizzard function/globals
-local GetCurrencyListSize, GetCurrencyListInfo, GetCurrencyInfo, IsQuestFlaggedCompleted =    -- variables
-      GetCurrencyListSize, GetCurrencyListInfo, GetCurrencyInfo, IsQuestFlaggedCompleted      -- blizzard api
-
-local function getCurrencyName( self )
-    local name = GetCurrencyInfo(self.currencyID);
-    
-    return name;
-end
+local GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted =    -- variables
+      GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted      -- blizzard api
 
 ---[[
 local BONUS_ROLL_QUESTID = {
