@@ -8,8 +8,8 @@ local addon = LibStub( "AceAddon-3.0" ):GetAddon( addonName );
 local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- cache lua functions
-local next, table, SecondsToTime =    -- variables
-      next, table, SecondsToTime    -- lua functions
+local next, table, SecondsToTime, tsort =       -- variables
+      next, table, SecondsToTime, table.sort    -- lua functions
 
 -- Get a reference to the lib
 local LibQTip = LibStub( "LibQTip-1.0" )
@@ -252,6 +252,7 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
             lineNum = tooltip:AddLine( currencyName );
         end
         
+        ---[[
         for colNdx, charData in next, charList do
             if (LockoutDb[ charData.realmName ] ~= nil) and
                (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
@@ -281,6 +282,7 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
                 tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
             end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
         end -- for colNdx, charData in next, charList
+        --]]
     end -- for currencyName, _ in next, currencyList
 
     tooltip:AddSeparator( );
@@ -394,7 +396,7 @@ function addon:ShowInfo( frame )
     end -- for realmName, characters in next, LockoutDb
     
     -- sort list by realm then character
-    table.sort( charList, function(l, r)
+    tsort( charList, function(l, r)
                             if (l.realmName ~= r.realmName) then
                                 return l.realmName < r.realmName;
                             end
@@ -404,10 +406,10 @@ function addon:ShowInfo( frame )
     );
 
     -- sort instance list
-    table.sort( dungeonList );
-    table.sort( raidList );
-    table.sort( worldBossList );
-    table.sort( currencyList );
+    tsort( dungeonList );
+    tsort( raidList );
+    tsort( worldBossList );
+    tsort( currencyList );
     
     -- initialize the column count going forward
     tooltip:SetColumnLayout( #charList + 1 );

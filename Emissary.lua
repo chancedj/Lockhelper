@@ -53,9 +53,9 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             local title = GetQuestLogTitle( GetQuestLogIndexByID( questID ) );
             
             emissaryData.name       = title;
-            emissaryData.day        = day;
-            emissaryData.fullfilled = numFulfilled;
-            emissaryData.required   = numRequired;
+            emissaryData.day        = day or 0;
+            emissaryData.fullfilled = numFulfilled or 0;
+            emissaryData.required   = numRequired or 0;
             emissaryData.isComplete = finished;
             emissaryData.resetDate  = GetServerTime() + GetQuestResetTime() + (day * dayCalc);
             
