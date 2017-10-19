@@ -245,19 +245,18 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
     local lineNum = tooltip:AddLine( );
     tooltip.lines[ lineNum ].is_header = true;
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
-    for currencyName, currencyData in next, currencyList do
+    for _, currencyData in next, currencyList do
+        local displayName = currencyData.name .. " (" .. addon.ExpansionAbbr[ currencyData.expansionLevel ] .. ")";
         if( currencyData.icon ) then
-            lineNum = tooltip:AddLine( currencyData.icon .. currencyName );
-        else
-            lineNum = tooltip:AddLine( currencyName );
+            lineNum = tooltip:AddLine( currencyData.icon .. displayName );
         end
-        
+       
         ---[[
         for colNdx, charData in next, charList do
             if (LockoutDb[ charData.realmName ] ~= nil) and
                (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
-               (LockoutDb[ charData.realmName ][ charData.charNdx ].currency[ currencyName ] ~= nil) then
-                local currData = LockoutDb[ charData.realmName ][ charData.charNdx ].currency[ currencyName ];
+               (LockoutDb[ charData.realmName ][ charData.charNdx ].currency[ currencyData.currencyID ] ~= nil) then
+                local currData = LockoutDb[ charData.realmName ][ charData.charNdx ].currency[ currencyData.currencyID ];
 
                 local displayText = "";
                 if( currData.count ~= nil ) then
@@ -344,6 +343,9 @@ function addon:ShowInfo( frame )
     local emissaryList = { {}, {}, {} }; -- initialize with 3
     local weeklyQuestList = {};
 
+    local CURRENCY_LIST = addon:getCurrencyList();
+    local CURRENCY_LIST_MAP = addon:getCurrencyListMap();
+    
     -- get list of characters and realms for the horizontal
     for realmName, characters in next, LockoutDb do
         if( not self.config.profile.general.currentRealm ) or ( currRealmName == realmName ) then
@@ -371,9 +373,13 @@ function addon:ShowInfo( frame )
                     worldBossList[ bossName ] = "set"
                 end -- for bossName, _ in next, charData.worldBosses
                 
-                for currName, currData in next, charData.currency do
-                    currencyList[ currName ] = currencyList[ currName ] or {};
-                    currencyList[ currName ].icon = currencyList[ currName ].icon or currData.icon
+                for currID, currData in next, charData.currency do
+                    local currNdx = CURRENCY_LIST_MAP[ currID ];
+                    local curr = CURRENCY_LIST[ currNdx ];
+                    
+                    if( curr ~= nil ) and ( self.config.profile.currency.displayList[ currID ] ) then
+                        currencyList[ currID ] = currNdx;
+                    end
                 end -- for currName, _ in next, charData.currency
                 
                 for questAbbr, questData in next, charData.weeklyQuests do
@@ -405,11 +411,18 @@ function addon:ShowInfo( frame )
                           end
     );
 
+    local currencyDisplayList = {};
+    
+    for currID, currNdx in next, currencyList do
+        currencyDisplayList[ #currencyDisplayList + 1 ] = CURRENCY_LIST[ currNdx ];
+    end
+    
     -- sort instance list
     tsort( dungeonList );
     tsort( raidList );
     tsort( worldBossList );
-    tsort( currencyList );
+    local so = addon:getCurrencyOptions();
+    tsort( currencyDisplayList, so[ self.config.profile.currency.sortBy ].sortFunction );
     
     -- initialize the column count going forward
     tooltip:SetColumnLayout( #charList + 1 );
@@ -477,7 +490,7 @@ function addon:ShowInfo( frame )
         populateWeeklyQuestData( L["Repeatable Quest"], tooltip, charList, weeklyQuestList );
     end
     if( self.config.profile.currency.show ) then
-        populateCurrencyData( L["Currency"], tooltip, charList, currencyList );
+        populateCurrencyData( L["Currency"], tooltip, charList, currencyDisplayList );
     end
 
     local lineNum = tooltip:AddLine( );

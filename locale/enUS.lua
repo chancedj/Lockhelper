@@ -66,3 +66,12 @@ L["N"] 	= "N";
 L["H"] 	= "H";
 L["M"]  = "M";
 L["L"]  = "L";
+
+-- expansion abbreviations
+L["Van"]    = "Van";
+L["BC"]     = "BC";
+L["WotLK"]  = "WotLK";
+L["Cata"]   = "Cata";
+L["MoP"]    = "MoP";
+L["WoD"]    = "WoD";
+L["Leg"]      = "Leg";

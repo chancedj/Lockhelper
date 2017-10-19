@@ -34,6 +34,16 @@ function addon:destroyDb()
     if( type( key ) ~= "number" ) then LockoutDb = nil; end;
 end -- destroyDb
 
+addon.ExpansionAbbr = {
+    [0] = L["Van"],
+    [1] = L["BC"],
+    [2] = L["WotLK"],
+    [3] = L["Cata"],
+    [4] = L["MoP"],
+    [5] = L["WoD"],
+    [6] = L["Leg"],    
+}
+
 -- tues for US, Wed for rest?
 local MapRegionReset = {
     [1] = 3, -- US
@@ -185,10 +195,9 @@ local currencySortOptions = {
         description = "Expansion then Name",
         sortFunction =  function(l, r)
                             if ( l.expansionLevel ~= r.expansionLevel ) then
-                                return l.expansionLevel < r.expansionLevel;
+                                return l.expansionLevel > r.expansionLevel;
                             end
-                            
-                            print( "sorting: en" );
+
                             return l.name < r.name;
                         end
     },
@@ -198,9 +207,8 @@ local currencySortOptions = {
                             if ( l.name ~= r.name ) then
                                 return l.name < r.name;
                             end
-                            
-                            print( "sorting: ne" );
-                            return l.expansionLevel < r.expansionLevel;
+
+                            return l.expansionLevel > r.expansionLevel;
                         end
     }
 }
@@ -208,11 +216,25 @@ local currencySortOptions = {
 local function resolveCurrencyInfo( )
     for _, currency in next, CURRENCY_LIST do
         currency.name, _, currency.icon = GetCurrencyInfo( currency.currencyID );
+        
+        if( currency.icon ) then
+            currency.icon = "|T" .. currency.icon .. ":0|t"
+        end
     end
 end
 
 function addon:getCurrencyOptions()
     return currencySortOptions;
+end
+
+function addon:getCurrencyListMap()
+    local map = {};
+    
+    for ndx, curr in next, CURRENCY_LIST do
+        map[ curr.currencyID ] = ndx;
+    end
+    
+    return map;
 end
 
 function addon:getCurrencyList()
@@ -222,10 +244,6 @@ function addon:getCurrencyList()
     if( data.name == nil ) then
         resolveCurrencyInfo();
     end
-    
-    local sortFn = currencySortOptions[ "en" ].sortFunction;
-    
-    table.sort( CURRENCY_LIST, sortFn );
     
     return CURRENCY_LIST;
 end

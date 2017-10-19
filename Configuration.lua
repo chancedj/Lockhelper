@@ -41,7 +41,7 @@ function addon:getConfigOptions()
                 _, _, currencyData.icon = GetCurrencyInfo( currencyData.currencyID );
             end
 
-            currencyList[ currencyData.currencyID ] = "|T" .. currencyData.icon .. ":0|t" .. currencyData.name;
+            currencyList[ currencyData.currencyID ] = currencyData.icon .. currencyData.name;
         end
     end
     
@@ -210,7 +210,7 @@ function addon:getConfigOptions()
 			  set = function(info,val) self.config.profile.currency.sortBy = val; end,
 			  get = function(info) return self.config.profile.currency.sortBy end
             },
-            currencyVisible1 = {
+            currencyVisible = {
                 order = 103,
                 name = "Visible Currencies",
                 desc = "Select which currencies you'd like to see",

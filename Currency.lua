@@ -13,12 +13,12 @@ local next, strfmt =            -- variables
       next, string.format       -- lua functions
 
 -- cache blizzard function/globals
-local GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted =    -- variables
-      GetCurrencyListSize, GetCurrencyListInfo, IsQuestFlaggedCompleted      -- blizzard api
+local GetCurrencyInfo, IsQuestFlaggedCompleted =    -- variables
+      GetCurrencyInfo, IsQuestFlaggedCompleted      -- blizzard api
 
 ---[[
 local BONUS_ROLL_QUESTID = {
-    [ "Seal of Broken Fate" ] = {
+    [ 1273 ] = {
         [1] = {
             43892,  -- order resources
             43893,  -- order resources
@@ -74,33 +74,39 @@ end
 function addon:Lockedout_BuildCurrencyList( realmName, charNdx )
     local currency = {}; -- initialize currency table;
 
-    local currencyListSize = GetCurrencyListSize();
-    local calculatedResetDate = addon:getWeeklyLockoutDate();
-    for index=1, currencyListSize do
-        local name, isHeader, _, isUnused, _, count, icon, maximum = GetCurrencyListInfo( index );
+    for ndx, currencyData in next, addon:getCurrencyList() do
+        if( currencyData.show ) then
+            local name, count, icon, _, _, maximum, discovered = GetCurrencyInfo( currencyData.currencyID );
 
-        if( not isHeader ) and ( not isUnused ) then
-            currency[ name ] = {}
-            currency[ name ].icon = "|T" .. icon .. ":0|t";
-            currency[ name ].count = count;
-            currency[ name ].maximum = maximum;
-
-            local questList = BONUS_ROLL_QUESTID[ name ];
-            local bonus = nil;
-            if( questList ~= nil ) then
-                bonus = {};
-                for _, questGroup in next, questList do
-                    local bonusCompleted = 0;
-                    for _, questId in next, questGroup do
-                        if( IsQuestFlaggedCompleted( questId ) ) then
-                            bonusCompleted = bonusCompleted + 1;
+            local data;
+            if( discovered ) then
+                data = {
+                    count = count,
+                    maximum = maximum
+                }
+                
+                local questList = BONUS_ROLL_QUESTID[ currencyData.currencyID ];
+                local bonus;
+                if( questList ~= nil ) then
+                    bonus = {};
+                    for _, questGroup in next, questList do
+                        local bonusCompleted = 0;
+                        for _, questId in next, questGroup do
+                            if( IsQuestFlaggedCompleted( questId ) ) then
+                                bonusCompleted = bonusCompleted + 1;
+                            end
                         end
-                    end
 
-                    bonus[ #bonus + 1 ] = bonusCompleted;
+                        bonus[ #bonus + 1 ] = bonusCompleted;
+                    end
                 end
+                
+                data.bonus = bonus;
+            else
+                data = nil;
             end
-            currency[ name ].bonus = bonus;
+            
+            currency[ currencyData.currencyID ] = data;
         end
     end
 
