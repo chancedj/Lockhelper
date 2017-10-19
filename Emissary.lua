@@ -46,10 +46,10 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
     for _, questID in next, EMISSARY_LIST do
         ---[[
         local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes( questID );
-        if( timeleft ~= nil ) and ( timeleft > 0 ) then
+        local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questID, 1, false );
+        if( timeleft ~= nil ) and ( timeleft > 0 ) and ( numRequired ~= nil ) then
             local day = mfloor( timeleft * 60 / dayCalc );
             local emissaryData = emissaries[ questID ] or {};
-            local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questID, 1, false );
             local title = GetQuestLogTitle( GetQuestLogIndexByID( questID ) );
             
             emissaryData.name       = title;
@@ -62,8 +62,6 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             emissaries[ questID ] = emissaryData;
         elseif( IsQuestFlaggedCompleted( questID ) ) and 
               ( ( emissaries[ questID ] == nil ) or ( emissaries[ questID ].isComplete ~= true ) ) then
-
-            print( "messing with completed quests!?" );
             local emissaryData = emissaries[ questID ] or {};
 
             emissaryData.name       = emissaryData.name or nil;
@@ -71,7 +69,7 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             emissaryData.fullfilled = emissaryData.fullfilled or 0;
             emissaryData.required   = emissaryData.fullfilled or 0;
             emissaryData.isComplete = true;
-            emissaryData.resetDate  = GetServerTime() + GetQuestResetTime();
+            emissaryData.resetDate  = timeleft or (GetServerTime() + GetQuestResetTime());
             
             emissaries[ questID ] = emissaryData;
         end
