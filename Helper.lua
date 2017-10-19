@@ -192,7 +192,7 @@ local CURRENCY_LIST = {
 
 local currencySortOptions = {
     ["en"] = {
-        description = "Expansion then Name",
+        description = L["Expansion then Name"],
         sortFunction =  function(l, r)
                             if ( l.expansionLevel ~= r.expansionLevel ) then
                                 return l.expansionLevel > r.expansionLevel;
@@ -202,7 +202,7 @@ local currencySortOptions = {
                         end
     },
     ["ne"] = {
-        description = "Name then Expansion",
+        description = L["Name then Expansion"],
         sortFunction =  function(l, r)
                             if ( l.name ~= r.name ) then
                                 return l.name < r.name;

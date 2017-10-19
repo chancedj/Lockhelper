@@ -33,11 +33,18 @@ L["Currency Options"]           = "Currency Options";
 L["Emissary Options"]           = "Emissary Options";
 L["Repeatable Quest Options"]   = "Repeatable Quest Options";
 
+L["Short"]                      = "Short";
+L["Long"]                       = "Long";
+L["Expansion then Name"]        = "Expansion then Name";
+L["Name then Expansion"]        = "Name then Expansion";
+
 -- * labels
-L["Enable"]         = "Enable";
-L["Show"]           = "Show";
-L["Hide Icon"]      = "Hide Icon";
-L["Show when dead"] = "Show when dead";
+L["Enable"]             = "Enable";
+L["Show"]               = "Show";
+L["Hide Icon"]          = "Hide Icon";
+L["Show when dead"]     = "Show when dead";
+L["Sort By"]            = "Sort By";
+L["Visible Currencies"] = "Visible Currencies";
 
 -- * label descriptions
 L["Enables / disables the addon"]               = "Enables / disables the addon";
@@ -52,6 +59,8 @@ L["Show currency information"]                  = "Show currency information";
 L["Configures currency display"]                = "Configures currency display";
 L["Show Emissary Information"]                  = "Show Emissary Information";
 L["Show repeatable quest information"]          = "Show repeatable quest information";
+L["Configure how currency is sorted"]           = "Configure how currency is sorted";
+L["Select which currencies you'd like to see"]  = "Select which currencies you'd like to see";
 
 -- difficulty mapping full
 L["Unknown"]    = "Unknown";
@@ -67,6 +76,10 @@ L["H"] 	= "H";
 L["M"]  = "M";
 L["L"]  = "L";
 
+-- quest.lua mappings
+L["Blingtron"]          = "Blingtron";
+L["Instant Complete"]   = "Instant Complete";
+
 -- expansion abbreviations
 L["Van"]    = "Van";
 L["BC"]     = "BC";
@@ -74,4 +87,4 @@ L["WotLK"]  = "WotLK";
 L["Cata"]   = "Cata";
 L["MoP"]    = "MoP";
 L["WoD"]    = "WoD";
-L["Leg"]      = "Leg";
+L["Leg"]    = "Leg";

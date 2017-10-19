@@ -23,8 +23,8 @@ function addon:getConfigOptions()
     --]]
     
     local currencyOptions = {
-                                ["short"] = "Short",
-                                ["long"] = "Long"
+                                ["short"] = L["Short"],
+                                ["long"] = L["Long"]
                             };
     
     local currencySortOptions = {};
@@ -202,8 +202,8 @@ function addon:getConfigOptions()
 			},
             currencySort = {
 			  order = 102,
-			  name = "Sort By",
-			  desc = "Configure how currency is sorted",
+			  name = L["Sort By"],
+			  desc = L["Configure how currency is sorted"],
 			  type = "select",
               style = "dropdown",
               values = currencySortOptions,
@@ -212,8 +212,8 @@ function addon:getConfigOptions()
             },
             currencyVisible = {
                 order = 103,
-                name = "Visible Currencies",
-                desc = "Select which currencies you'd like to see",
+                name = L["Visible Currencies"],
+                desc = L["Select which currencies you'd like to see"],
                 type = "multiselect",
                 values = currencyList,
                 set = function(info,key,val) self.config.profile.currency.displayList[key] = val; end,
