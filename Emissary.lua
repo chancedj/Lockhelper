@@ -31,28 +31,28 @@ local OLD_EMISSARY_LIST = {
 
 local EMISSARY_LIST = {
     [ "6" ] = {
-        { questID = "48642", numRequired=4, factionId=0 }, -- argussian reach
-        { questID = "48641", numRequired=4, factionId=0 }, -- armies of the legionfall
-        { questID = "48639", numRequired=4, factionId=0 }, -- armies of the light
-        { questID = "42420", numRequired=4, factionId=0 }, -- court of farondis
-        { questID = "42233", numRequired=4, factionId=0 }, -- highmountain tribes
-        { questID = "42170", numRequired=4, factionId=0 }, -- the dreamweavers
-        { questID = "43179", numRequired=3, factionId=0 }, -- kirin tor of dalaran
-        { questID = "42421", numRequired=4, factionId=0 }, -- the nightfallen
-        { questID = "42234", numRequired=4, factionId=0 }, -- the valajar   
-        { questID = "42422", numRequired=4, factionId=0 }  -- the wardens
+        { questID = "48642", numRequired=4, factionId=2170 }, -- argussian reach
+        { questID = "48641", numRequired=4, factionId=2045 }, -- armies of the legionfall
+        { questID = "48639", numRequired=4, factionId=2165 }, -- armies of the light
+        { questID = "42420", numRequired=4, factionId=1900 }, -- court of farondis
+        { questID = "42233", numRequired=4, factionId=1828 }, -- highmountain tribes
+        { questID = "42170", numRequired=4, factionId=1883 }, -- the dreamweavers
+        { questID = "43179", numRequired=3, factionId=1090 }, -- kirin tor of dalaran
+        { questID = "42421", numRequired=4, factionId=1859 }, -- the nightfallen
+        { questID = "42234", numRequired=4, factionId=1948 }, -- the valajar   
+        { questID = "42422", numRequired=4, factionId=1894 }  -- the wardens
     },
     [ "7" ] = {
-        { questID = "50604", numRequired=3, factionId=0 }, -- Tortollan Seekers
-        { questID = "50562", numRequired=4, factionId=0 }, -- Champions of Azeroth 
-        { questID = "50599", numRequired=4, factionId=0 }, -- Proudmoore Admiralty 
-        { questID = "50600", numRequired=4, factionId=0 }, -- Order of Embers
-        { questID = "50601", numRequired=4, factionId=0 }, -- Storm's Wake
-        { questID = "50605", numRequired=4, factionId=0 }, -- Alliance War Effort
-        { questID = "50598", numRequired=4, factionId=0 }, -- Zandalari Empire
-        { questID = "50603", numRequired=4, factionId=0 }, -- Voldunai
-        { questID = "50602", numRequired=4, factionId=0 }, -- Talanji's Expedition 
-        { questID = "50606", numRequired=4, factionId=0 }  -- Horde War Effort 
+        { questID = "50604", numRequired=3, factionId=2163 }, -- Tortollan Seekers
+        { questID = "50562", numRequired=4, factionId=2164 }, -- Champions of Azeroth 
+        { questID = "50599", numRequired=4, factionId=2160 }, -- Proudmoore Admiralty 
+        { questID = "50600", numRequired=4, factionId=2161 }, -- Order of Embers
+        { questID = "50601", numRequired=4, factionId=2162 }, -- Storm's Wake
+        { questID = "50605", numRequired=4, factionId=2159 }, -- Alliance War Effort
+        { questID = "50598", numRequired=4, factionId=2103 }, -- Zandalari Empire
+        { questID = "50603", numRequired=4, factionId=2158 }, -- Voldunai
+        { questID = "50602", numRequired=4, factionId=2156 }, -- Talanji's Expedition 
+        { questID = "50606", numRequired=4, factionId=2157 }  -- Horde War Effort 
     }
 }
 
@@ -74,8 +74,11 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             local questID = emData.questID;
             local timeleft = GetQuestTimeLeftMinutes( questID );
             local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questID, 1, false );
+            local factionParagonEnabled = C_IsFactionParagon( emData.factionId );
             local currentValue, threshold, _, hasRewardPending = C_GetFactionParagonInfo( emData.factionId );
 
+            print( 'factionId: ', emData.factionId, ' ',  currentValue, '/', threshold, ' Reward Pending: ', factionParagonEnabled and hasRewardPending );
+            
             if( timeleft ~= nil ) and ( timeleft > 0 ) and ( numRequired ~= nil ) then
                 local day = mfloor( timeleft * 60 / dayCalc );
                 local emissaryData = emissaries[ questID ] or {};
@@ -85,7 +88,7 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
                 emissaryData.required     = numRequired or 0;
                 emissaryData.isComplete   = finished and IsQuestFlaggedCompleted( questID );
                 emissaryData.resetDate    = dailyResetDate + (day * dayCalc);
-                emissaryData.paragonReady = currentValue and hasRewardPending;
+                emissaryData.paragonReady = factionParagonEnabled and hasRewardPending;
                 emissaryData.expLevel     = expLevel;
                 
                 self:debug( "In Process: ", questID );
@@ -104,7 +107,7 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
                 emissaryData.required   = emData.numRequired;
                 emissaryData.isComplete = true;
                 emissaryData.resetDate  = resetDate;
-                emissaryData.paragonReady = currentValue and hasRewardPending;
+                emissaryData.paragonReady = factionParagonEnabled and hasRewardPending;
                 emissaryData.expLevel     = expLevel;
                 
                 self:debug( "Completed: resetDate: ", emissaryData.resetDate, "timeleft: ", timeleft, " - ", questID );
