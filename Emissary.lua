@@ -77,7 +77,7 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             local factionParagonEnabled = C_IsFactionParagon( emData.factionId );
             local currentValue, threshold, _, hasRewardPending = C_GetFactionParagonInfo( emData.factionId );
 
-            print( 'factionId: ', emData.factionId, ' ',  currentValue, '/', threshold, ' Reward Pending: ', factionParagonEnabled and hasRewardPending );
+            self:debug( 'factionId: ', emData.factionId, ' ',  currentValue, '/', threshold, ' Reward Pending: ', factionParagonEnabled and hasRewardPending );
             
             if( timeleft ~= nil ) and ( timeleft > 0 ) and ( numRequired ~= nil ) then
                 local day = mfloor( timeleft * 60 / dayCalc );
