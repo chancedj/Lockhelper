@@ -166,6 +166,7 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                 
                                                 tooltip:SetColumnLayout( 1 );
                                                 tooltip:AddHeader( "Boss Name" );
+                                                local hasBossData = false;
                                                 local resetAssigned = true;
                                                 for difficulty, instanceData in next, self.anchor.data do
                                                     if ( difficulty ~= addon.KEY_KEYSTONE ) and ( difficulty ~= addon.KEY_MYTHICBEST ) then
@@ -186,6 +187,7 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                         tooltip:SetCell( ln, 1, "|cFF00FF00" .. L["*Resets in"] .. "|r", nil, "CENTER" );
                                                         tooltip:SetCell( ln, col, "|cFFFF0000" .. SecondsToTime( instanceData.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
                                                         for bossIndex, bossData in next, instanceData.bossData do
+                                                            hasBossData = true;
                                                             if( col == 2 ) then
                                                                 ln = tooltip:AddLine( );
                                                             else
@@ -215,9 +217,12 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                     tooltip:SetCell( 1, 2, "|cFFFF0000" .. SecondsToTime( instanceData.resetDate - GetServerTime() ) .. "|r", nil, "CENTER" );
                                                     tooltip:SetLineColor( 1, 1, 1, 1, 0.1 );
                                                 end;
-                                                
-                                                setAnchorToTooltip( tooltip, self.anchor.lineNum, self.anchor.cellNum );
-                                                tooltip:Show();
+
+                                                -- display only if there is any boss data for the instance(s)
+                                                if ( hasBossData ) then
+                                                    setAnchorToTooltip( tooltip, self.anchor.lineNum, self.anchor.cellNum );
+                                                    tooltip:Show();
+                                                end;
                                             end -- function( data )
                 instanceDisplay.deleteTT = emptyFunction;
                 instanceDisplay.anchor = getAnchorPkt( "in", encounterName, instances, lineNum, colNdx + 1 );
