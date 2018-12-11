@@ -67,7 +67,8 @@ local WORLD_BOSS_LIST = {
     { instanceID=1028, bossID=2197, questID=52157, bossName="Hailstone Construct" }, -- unverified
     { instanceID=1028, bossID=2199, questID=52163, bossName="Azurethos" }, -- verified
     { instanceID=1028, bossID=2198, questID=52166, bossName="Warbringer Yenajz" }, -- verified
-    { instanceID=1028, bossID=2210, questID=54896, bossName="Invus the Forest Lord" }, -- unverified
+    { instanceID=1028, bossID=2210, questID=52196, bossName="Dunegorger Kraulok" }, -- verified
+    { instanceID=1028, bossID=2210, questID=54896, bossName="Ivus the Forest Lord" }, -- unverified
     
     -- Warfront Bosses
     { instanceID=1028, bossID=2213, questID=52847, bossName="Doom's Howl" }, -- verified

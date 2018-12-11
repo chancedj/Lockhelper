@@ -36,59 +36,30 @@ local OLD_EMISSARY_LIST = {
 --]]
 local EMISSARY_LIST = {
     [ "6" ] = {
-        [ "48642" ] = { numRequired=4, factionId=2170, appliesTo="B" }, -- argussian reach
-        [ "48641" ] = { numRequired=4, factionId=2045, appliesTo="B" }, -- armies of the legionfall
-        [ "48639" ] = { numRequired=4, factionId=2165, appliesTo="B" }, -- armies of the light
-        [ "42420" ] = { numRequired=4, factionId=1900, appliesTo="B" }, -- court of farondis
-        [ "42233" ] = { numRequired=4, factionId=1828, appliesTo="B" }, -- highmountain tribes
-        [ "42170" ] = { numRequired=4, factionId=1883, appliesTo="B" }, -- the dreamweavers
-        [ "43179" ] = { numRequired=3, factionId=1090, appliesTo="B" }, -- kirin tor of dalaran
-        [ "42421" ] = { numRequired=4, factionId=1859, appliesTo="B" }, -- the nightfallen
-        [ "42234" ] = { numRequired=4, factionId=1948, appliesTo="B" }, -- the valajar   
-        [ "42422" ] = { numRequired=4, factionId=1894, appliesTo="B" }  -- the wardens
+        [ "48642" ] = { numRequired=4, factionId=2170 }, -- argussian reach
+        [ "48641" ] = { numRequired=4, factionId=2045 }, -- armies of the legionfall
+        [ "48639" ] = { numRequired=4, factionId=2165 }, -- armies of the light
+        [ "42420" ] = { numRequired=4, factionId=1900 }, -- court of farondis
+        [ "42233" ] = { numRequired=4, factionId=1828 }, -- highmountain tribes
+        [ "42170" ] = { numRequired=4, factionId=1883 }, -- the dreamweavers
+        [ "43179" ] = { numRequired=3, factionId=1090 }, -- kirin tor of dalaran
+        [ "42421" ] = { numRequired=4, factionId=1859 }, -- the nightfallen
+        [ "42234" ] = { numRequired=4, factionId=1948 }, -- the valajar   
+        [ "42422" ] = { numRequired=4, factionId=1894 }  -- the wardens
     },
     [ "7" ] = {
-        [ "50604" ] = { numRequired=3, factionId=2163, appliesTo="B" }, -- Tortollan Seekers (neutral)
-        [ "50562" ] = { numRequired=4, factionId=2164, appliesTo="B" }, -- Champions of Azeroth (neutral)
-        [ "50599" ] = { numRequired=4, factionId=2160, appliesTo="A" }, -- Proudmoore Admiralty (alliance)
-        [ "50600" ] = { numRequired=4, factionId=2161, appliesTo="A" }, -- Order of Embers (alliance)
-        [ "50601" ] = { numRequired=4, factionId=2162, appliesTo="A" }, -- Storm's Wake (alliance)
-        [ "50605" ] = { numRequired=4, factionId=2159, appliesTo="A" }, -- Alliance War Effort (alliance)
-        [ "50598" ] = { numRequired=4, factionId=2103, appliesTo="H" }, -- Zandalari Empire (horde)
-        [ "50603" ] = { numRequired=4, factionId=2158, appliesTo="H" }, -- Voldunai (horde)
-        [ "50602" ] = { numRequired=4, factionId=2156, appliesTo="H" }, -- Talanji's Expedition (horde)
-        [ "50606" ] = { numRequired=4, factionId=2157, appliesTo="H" }  -- Horde War Effort (horde)
+        [ "50604" ] = { numRequired=3, factionId=2163 }, -- Tortollan Seekers (neutral)
+        [ "50562" ] = { numRequired=4, factionId=2164 }, -- Champions of Azeroth (neutral)
+        [ "50599" ] = { numRequired=4, factionId=2160 }, -- Proudmoore Admiralty (alliance)
+        [ "50600" ] = { numRequired=4, factionId=2161 }, -- Order of Embers (alliance)
+        [ "50601" ] = { numRequired=4, factionId=2162 }, -- Storm's Wake (alliance)
+        [ "50605" ] = { numRequired=4, factionId=2159 }, -- Alliance War Effort (alliance)
+        [ "50598" ] = { numRequired=4, factionId=2103 }, -- Zandalari Empire (horde)
+        [ "50603" ] = { numRequired=4, factionId=2158 }, -- Voldunai (horde)
+        [ "50602" ] = { numRequired=4, factionId=2156 }, -- Talanji's Expedition (horde)
+        [ "50606" ] = { numRequired=4, factionId=2157 }  -- Horde War Effort (horde)
     }
 }
-
---[[
-local EMISSARY_LIST = {
-    [ "6" ] = {
-        { questID = "48642", numRequired=4, factionId=2170, appliesTo="B" }, -- argussian reach
-        { questID = "48641", numRequired=4, factionId=2045, appliesTo="B" }, -- armies of the legionfall
-        { questID = "48639", numRequired=4, factionId=2165, appliesTo="B" }, -- armies of the light
-        { questID = "42420", numRequired=4, factionId=1900, appliesTo="B" }, -- court of farondis
-        { questID = "42233", numRequired=4, factionId=1828, appliesTo="B" }, -- highmountain tribes
-        { questID = "42170", numRequired=4, factionId=1883, appliesTo="B" }, -- the dreamweavers
-        { questID = "43179", numRequired=3, factionId=1090, appliesTo="B" }, -- kirin tor of dalaran
-        { questID = "42421", numRequired=4, factionId=1859, appliesTo="B" }, -- the nightfallen
-        { questID = "42234", numRequired=4, factionId=1948, appliesTo="B" }, -- the valajar   
-        { questID = "42422", numRequired=4, factionId=1894, appliesTo="B" }  -- the wardens
-    },
-    [ "7" ] = {
-        { questID = "50604", numRequired=3, factionId=2163, appliesTo="B" }, -- Tortollan Seekers (neutral)
-        { questID = "50562", numRequired=4, factionId=2164, appliesTo="B" }, -- Champions of Azeroth (neutral)
-        { questID = "50599", numRequired=4, factionId=2160, appliesTo="A" }, -- Proudmoore Admiralty (alliance)
-        { questID = "50600", numRequired=4, factionId=2161, appliesTo="A" }, -- Order of Embers (alliance)
-        { questID = "50601", numRequired=4, factionId=2162, appliesTo="A" }, -- Storm's Wake (alliance)
-        { questID = "50605", numRequired=4, factionId=2159, appliesTo="A" }, -- Alliance War Effort (alliance)
-        { questID = "50598", numRequired=4, factionId=2103, appliesTo="H" }, -- Zandalari Empire (horde)
-        { questID = "50603", numRequired=4, factionId=2158, appliesTo="H" }, -- Voldunai (horde)
-        { questID = "50602", numRequired=4, factionId=2156, appliesTo="H" }, -- Talanji's Expedition (horde)
-        { questID = "50606", numRequired=4, factionId=2157, appliesTo="H" }  -- Horde War Effort (horde)
-    }
-}
---]]
 
 local function copyEmissaryData( from, to )
     to.name       = from.name;
