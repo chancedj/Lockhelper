@@ -15,6 +15,7 @@ local next, mfloor =    -- variables
 local GetQuestObjectiveInfo, GetQuestTimeLeftMinutes, C_GetFactionParagonInfo, C_IsFactionParagon =                                    -- variables 
       GetQuestObjectiveInfo, C_TaskQuest.GetQuestTimeLeftMinutes, C_Reputation.GetFactionParagonInfo, C_Reputation.IsFactionParagon    -- blizzard api
 
+--[[
 local EMISSARY_MAP_ID = 1014;
 local OLD_EMISSARY_LIST = {
     { questID = "48642", numRequired=4 }, -- argussian reach
@@ -28,33 +29,66 @@ local OLD_EMISSARY_LIST = {
     { questID = "42234", numRequired=4 }, -- the valajar   
     { questID = "42422", numRequired=4 }  -- the wardens
 }
-
+--]]
+--[[
+	first key is the expansion level that the emissary applies to
+	second key is the questid that the emissary ties to
+--]]
 local EMISSARY_LIST = {
     [ "6" ] = {
-        { questID = "48642", numRequired=4, factionId=2170 }, -- argussian reach
-        { questID = "48641", numRequired=4, factionId=2045 }, -- armies of the legionfall
-        { questID = "48639", numRequired=4, factionId=2165 }, -- armies of the light
-        { questID = "42420", numRequired=4, factionId=1900 }, -- court of farondis
-        { questID = "42233", numRequired=4, factionId=1828 }, -- highmountain tribes
-        { questID = "42170", numRequired=4, factionId=1883 }, -- the dreamweavers
-        { questID = "43179", numRequired=3, factionId=1090 }, -- kirin tor of dalaran
-        { questID = "42421", numRequired=4, factionId=1859 }, -- the nightfallen
-        { questID = "42234", numRequired=4, factionId=1948 }, -- the valajar   
-        { questID = "42422", numRequired=4, factionId=1894 }  -- the wardens
+        [ "48642" ] = { numRequired=4, factionId=2170, appliesTo="B" }, -- argussian reach
+        [ "48641" ] = { numRequired=4, factionId=2045, appliesTo="B" }, -- armies of the legionfall
+        [ "48639" ] = { numRequired=4, factionId=2165, appliesTo="B" }, -- armies of the light
+        [ "42420" ] = { numRequired=4, factionId=1900, appliesTo="B" }, -- court of farondis
+        [ "42233" ] = { numRequired=4, factionId=1828, appliesTo="B" }, -- highmountain tribes
+        [ "42170" ] = { numRequired=4, factionId=1883, appliesTo="B" }, -- the dreamweavers
+        [ "43179" ] = { numRequired=3, factionId=1090, appliesTo="B" }, -- kirin tor of dalaran
+        [ "42421" ] = { numRequired=4, factionId=1859, appliesTo="B" }, -- the nightfallen
+        [ "42234" ] = { numRequired=4, factionId=1948, appliesTo="B" }, -- the valajar   
+        [ "42422" ] = { numRequired=4, factionId=1894, appliesTo="B" }  -- the wardens
     },
     [ "7" ] = {
-        { questID = "50604", numRequired=3, factionId=2163 }, -- Tortollan Seekers
-        { questID = "50562", numRequired=4, factionId=2164 }, -- Champions of Azeroth 
-        { questID = "50599", numRequired=4, factionId=2160 }, -- Proudmoore Admiralty 
-        { questID = "50600", numRequired=4, factionId=2161 }, -- Order of Embers
-        { questID = "50601", numRequired=4, factionId=2162 }, -- Storm's Wake
-        { questID = "50605", numRequired=4, factionId=2159 }, -- Alliance War Effort
-        { questID = "50598", numRequired=4, factionId=2103 }, -- Zandalari Empire
-        { questID = "50603", numRequired=4, factionId=2158 }, -- Voldunai
-        { questID = "50602", numRequired=4, factionId=2156 }, -- Talanji's Expedition 
-        { questID = "50606", numRequired=4, factionId=2157 }  -- Horde War Effort 
+        [ "50604" ] = { numRequired=3, factionId=2163, appliesTo="B" }, -- Tortollan Seekers (neutral)
+        [ "50562" ] = { numRequired=4, factionId=2164, appliesTo="B" }, -- Champions of Azeroth (neutral)
+        [ "50599" ] = { numRequired=4, factionId=2160, appliesTo="A" }, -- Proudmoore Admiralty (alliance)
+        [ "50600" ] = { numRequired=4, factionId=2161, appliesTo="A" }, -- Order of Embers (alliance)
+        [ "50601" ] = { numRequired=4, factionId=2162, appliesTo="A" }, -- Storm's Wake (alliance)
+        [ "50605" ] = { numRequired=4, factionId=2159, appliesTo="A" }, -- Alliance War Effort (alliance)
+        [ "50598" ] = { numRequired=4, factionId=2103, appliesTo="H" }, -- Zandalari Empire (horde)
+        [ "50603" ] = { numRequired=4, factionId=2158, appliesTo="H" }, -- Voldunai (horde)
+        [ "50602" ] = { numRequired=4, factionId=2156, appliesTo="H" }, -- Talanji's Expedition (horde)
+        [ "50606" ] = { numRequired=4, factionId=2157, appliesTo="H" }  -- Horde War Effort (horde)
     }
 }
+
+--[[
+local EMISSARY_LIST = {
+    [ "6" ] = {
+        { questID = "48642", numRequired=4, factionId=2170, appliesTo="B" }, -- argussian reach
+        { questID = "48641", numRequired=4, factionId=2045, appliesTo="B" }, -- armies of the legionfall
+        { questID = "48639", numRequired=4, factionId=2165, appliesTo="B" }, -- armies of the light
+        { questID = "42420", numRequired=4, factionId=1900, appliesTo="B" }, -- court of farondis
+        { questID = "42233", numRequired=4, factionId=1828, appliesTo="B" }, -- highmountain tribes
+        { questID = "42170", numRequired=4, factionId=1883, appliesTo="B" }, -- the dreamweavers
+        { questID = "43179", numRequired=3, factionId=1090, appliesTo="B" }, -- kirin tor of dalaran
+        { questID = "42421", numRequired=4, factionId=1859, appliesTo="B" }, -- the nightfallen
+        { questID = "42234", numRequired=4, factionId=1948, appliesTo="B" }, -- the valajar   
+        { questID = "42422", numRequired=4, factionId=1894, appliesTo="B" }  -- the wardens
+    },
+    [ "7" ] = {
+        { questID = "50604", numRequired=3, factionId=2163, appliesTo="B" }, -- Tortollan Seekers (neutral)
+        { questID = "50562", numRequired=4, factionId=2164, appliesTo="B" }, -- Champions of Azeroth (neutral)
+        { questID = "50599", numRequired=4, factionId=2160, appliesTo="A" }, -- Proudmoore Admiralty (alliance)
+        { questID = "50600", numRequired=4, factionId=2161, appliesTo="A" }, -- Order of Embers (alliance)
+        { questID = "50601", numRequired=4, factionId=2162, appliesTo="A" }, -- Storm's Wake (alliance)
+        { questID = "50605", numRequired=4, factionId=2159, appliesTo="A" }, -- Alliance War Effort (alliance)
+        { questID = "50598", numRequired=4, factionId=2103, appliesTo="H" }, -- Zandalari Empire (horde)
+        { questID = "50603", numRequired=4, factionId=2158, appliesTo="H" }, -- Voldunai (horde)
+        { questID = "50602", numRequired=4, factionId=2156, appliesTo="H" }, -- Talanji's Expedition (horde)
+        { questID = "50606", numRequired=4, factionId=2157, appliesTo="H" }  -- Horde War Effort (horde)
+    }
+}
+--]]
 
 local function copyEmissaryData( from, to )
     to.name       = from.name;
@@ -69,9 +103,9 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
     local dailyResetDate = addon:getDailyLockoutDate();
     
     for expLevel, emExpansionList in next, EMISSARY_LIST do
-        for _, emData in next, emExpansionList do
+        for questID, emData in next, emExpansionList do
             ---[[
-            local questID = emData.questID;
+            --local questID = emData.questID;
             local timeleft = GetQuestTimeLeftMinutes( questID );
             local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo( questID, 1, false );
             local factionParagonEnabled = C_IsFactionParagon( emData.factionId );
@@ -79,9 +113,10 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
 
             self:debug( 'factionId: ', emData.factionId, ' ',  currentValue, '/', threshold, ' Reward Pending: ', factionParagonEnabled and hasRewardPending );
             
+            local emissaryData = emissaries[ questID ] or {};
+
             if( timeleft ~= nil ) and ( timeleft > 0 ) and ( numRequired ~= nil ) then
                 local day = mfloor( timeleft * 60 / dayCalc );
-                local emissaryData = emissaries[ questID ] or {};
                 
                 emissaryData.active       = true;
                 emissaryData.fullfilled   = numFulfilled or 0;
@@ -92,9 +127,7 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
                 emissaryData.expLevel     = expLevel;
                 
                 self:debug( "In Process: ", questID );
-                emissaries[ questID ] = emissaryData;
             elseif( IsQuestFlaggedCompleted( questID ) ) then
-                local emissaryData = emissaries[ questID ] or {};
                 local resetDate = emissaryData.resetDate or dailyResetDate;
                 
                 if( timeleft ~= nil) and (timeleft > 0 ) then
@@ -102,20 +135,30 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
                     resetDate = dailyResetDate + (day * dayCalc)
                 end
                 
-                emissaryData.active     = true;
-                emissaryData.fullfilled = emData.numRequired;
-                emissaryData.required   = emData.numRequired;
-                emissaryData.isComplete = true;
-                emissaryData.resetDate  = resetDate;
-                emissaryData.paragonReady = factionParagonEnabled and hasRewardPending;
-                emissaryData.expLevel     = expLevel;
+                emissaryData.active     	= true;
+                emissaryData.fullfilled 	= emData.numRequired;
+                emissaryData.required   	= emData.numRequired;
+                emissaryData.isComplete 	= true;
+                emissaryData.resetDate  	= resetDate;
+                emissaryData.paragonReady 	= factionParagonEnabled and hasRewardPending;
+                emissaryData.expLevel     	= expLevel;
                 
                 self:debug( "Completed: resetDate: ", emissaryData.resetDate, "timeleft: ", timeleft, " - ", questID );
-                emissaries[ questID ] = emissaryData;
-            else
-                emissaries[ questID ] = nil;
+            elseif( factionParagonEnabled and hasRewardPending ) then
+                emissaryData.active     	= false;
+                emissaryData.fullfilled 	= 0;
+                emissaryData.required   	= 0;
+                emissaryData.isComplete 	= false;
+                emissaryData.resetDate  	= -1;
+                emissaryData.paragonReady 	= factionParagonEnabled and hasRewardPending;
+                emissaryData.expLevel     	= expLevel;
+                
+                self:debug( "Paragon found: ", questID );
+        	else
+                emissaryData = nil;
             end
             --]]
+            emissaries[ questID ] = emissaryData;
         end
     end
 
@@ -127,16 +170,19 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
             
             for questID, emissaryData in next, emissaries do
                 if( charEmissaries[ questID ] ~= nil ) then
-                    if( charEmissaries[ questID ].resetDate < emissaries[ questID ].resetDate ) then
+                	local charEmissaryData = charEmissaries[ questID ];
+                	if( charEmissaryData.resetData ) and (charEmissaryData.resetData == -1) then
+                		--- skip - paragon is tracking only for current char, so don't copy!;
+                    elseif( charEmissaryData.resetDate < emissaries[ questID ].resetDate ) then
                         self:debug( "updating: ", realmName, " - ", charData.charName );
-                        charEmissaries[ questID ].resetDate = emissaries[ questID ].resetDate;
-                        charEmissaries[ questID ].active    = emissaries[ questID ].active;
-                        charEmissaries[ questID ].expLevel  = emissaries[ questID ].expLevel;
-                    elseif( charEmissaries[ questID ].resetDate > emissaries[ questID ].resetDate ) then
+                        charEmissaryData.resetDate = emissaries[ questID ].resetDate;
+                        charEmissaryData.active    = emissaries[ questID ].active;
+                        charEmissaryData.expLevel  = emissaries[ questID ].expLevel;
+                    elseif( charEmissaryData.resetDate > emissaries[ questID ].resetDate ) then
                         self:debug( "using: ", realmName, " - ", charData.charName );
-                        emissaries[ questID ].resetDate = charEmissaries[ questID ].resetDate;
-                        emissaries[ questID ].active    = charEmissaries[ questID ].active;
-                        emissaries[ questID ].expLevel  = charEmissaries[ questID ].expLevel;
+                        emissaries[ questID ].resetDate = charEmissaryData.resetDate;
+                        emissaries[ questID ].active    = charEmissaryData.active;
+                        emissaries[ questID ].expLevel  = charEmissaryData.expLevel;
                     end
                 end
             end
