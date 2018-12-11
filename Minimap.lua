@@ -452,10 +452,6 @@ local function populateEmissaryData( header, tooltip, charList, emissaryList )
 end
 
 local function shouldDisplayChar( realmName, playerData )
-    if (playerData.charName == nil) then
-        return false;
-    end
-    
     addon:debug( realmName .. "." .. playerData.charName, playerData.currentLevel or -1 );
     
     return  ( addon.config.profile.general.showCharList[ realmName .. "." .. playerData.charName ] ) and
@@ -667,7 +663,8 @@ function addon:ShowInfo( frame, manualToggle )
                                 end -- function( data )
         charDisplay.deleteTT = emptyFunction;
         charDisplay.deleteChar =    function( self )
-                                        LockoutDb[ char.realmName ][ char.charNdx ] = nil;
+                                        --LockoutDb[ char.realmName ][ char.charNdx ] = nil;
+                                        addon:deleteChar( char.realmName, char.charNdx );
 
                                         local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
                                         LibQTip:Release( tooltip );

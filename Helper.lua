@@ -383,6 +383,20 @@ function addon:destroyDb()
     if( type( key ) ~= "number" ) then LockoutDb = nil; end;
 end -- destroyDb
 
+---[[
+function addon:deleteChar( realmName, charNdx )
+    if( LockoutDb ) then
+        if( LockoutDb[ realmName ] ) then
+            LockoutDb[ realmName ][ charNdx ] = nil;
+
+            if( #LockoutDb[ realmName ] == 0 ) then
+                LockoutDb[ realmName ] = nil;
+            end
+        end
+    end
+end
+--]]
+
 -- pulled from SO: https://stackoverflow.com/questions/2038418/associatively-sorting-a-table-by-value-in-lua
 function addon:getKeysSortedByValue(tbl, sortFunction)
   local keys = {}
@@ -404,9 +418,7 @@ function addon:getCharacterList()
     
     for realmName, characters in next, LockoutDb do
         for charNdx, charData in next, characters do
-            if (charData.charName ~= nil) then
-                charList[ realmName .. "." .. charData.charName ] = realmName .. " - " .. charData.charName;
-            end
+            charList[ realmName .. "." .. charData.charName ] = realmName .. " - " .. charData.charName;
         end
     end
 
