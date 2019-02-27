@@ -68,8 +68,8 @@ local function copyEmissaryData( from, to )
     to.resetDate  = from.resetDate;
 end
 
-function addon:Lockedout_BuildEmissary( realmName, charNdx )
-    local emissaries = LockoutDb[ realmName ][ charNdx ].emissaries or {}; -- initialize world boss table;
+function addon:Lockedout_BuildEmissary( )
+    local emissaries = addon.playerDb.emissaries or {}; -- initialize world boss table;
     local dayCalc = 24 * 60 * 60;
     local dailyResetDate = addon:getDailyLockoutDate();
     
@@ -134,7 +134,7 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
     end
 
     -- fix nil error on char rebuild
-    LockoutDb[ realmName ][ charNdx ].emissaries = emissaries;
+    addon.playerDb.emissaries = emissaries;
     for realmName, charDataList in next, LockoutDb do
         for charNdx, charData in next, charDataList do
             local charEmissaries = charData.emissaries;
@@ -161,5 +161,5 @@ function addon:Lockedout_BuildEmissary( realmName, charNdx )
     end
     
     -- last update since we may have updated
-    LockoutDb[ realmName ][ charNdx ].emissaries = emissaries;
+    addon.playerDb.emissaries = emissaries;
 end -- Lockedout_BuildEmissary()

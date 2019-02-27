@@ -32,15 +32,23 @@ local GetRealmName, UnitName, UnitClass, UnitLevel, GetAverageItemLevel, GetQues
 --]]
 
 local function getCharIndex( characters, search_charName )
-    local charNdx = #characters + 1;
+	for charNdx, character in next, characters do
+    	if( search_charName == character.charName ) then
+    		-- found, return current index
+    		return charNdx;
+    	end
+	end
+	--[[
+    for i = 1, #characters do
+    	if( search_charName == characters[ i ].charName ) then
+    		-- found, return current index
+    		return i;
+    	end
+    end
+	--]]
 
-    for searchNdx, character in next, characters do
-        if( search_charName == character.charName ) then
-            return searchNdx;
-        end; -- if( search_charName == character.charName )
-    end -- for searchNdx, character in next, characters
-    
-    return charNdx;
+    -- missing, so add a new entry
+    return #characters + 1
 end -- getCharIndex()
 
 local function clearExpiredLockouts( dataTable )
@@ -150,10 +158,12 @@ function addon:InitCharDB()
     
     LockoutDb[ realmName ][ charNdx ] = playerData;            -- initialize playerDb if not already initialized
     
-    return playerData, realmName, charNdx;
+    addon.playerDb = playerData;
+    addon.currentRealm = realmName;
+    addon.charDbIndex = charNdx;
 end
 
-function addon:Lockedout_GetCurrentCharData( calledByEvent )
+function addon:Lockedout_RebuildAll( )
     local timeTilResets = GetQuestResetTime();
     
     if( timeTilResets > 24 * 60 * 60 ) then
@@ -163,22 +173,15 @@ function addon:Lockedout_GetCurrentCharData( calledByEvent )
 
     self:destroyDb();
     self:checkExpiredLockouts();
-    
-    local playerData, realmName, charNdx = self:InitCharDB();
+    self:InitCharDB();
 
-    if( playerData.currentLevel >= addon.config.profile.general.minTrackCharLevel ) then
-        if( calledByEvent ) then
-            ---[[
-            self:Lockedout_BuildInstanceLockout( realmName, charNdx );
-            self:Lockedout_BuildWorldBoss( realmName, charNdx );
-            self:Lockedout_BuildCurrencyList( realmName, charNdx );
-            self:Lockedout_BuildEmissary( realmName, charNdx );
-            self:Lockedout_BuildWeeklyQuests( realmName, charNdx );
-            --]]
-        end
+    if( addon.playerDb.currentLevel >= addon.config.profile.general.minTrackCharLevel ) then
+        self:Lockedout_BuildInstanceLockout( );
+        self:Lockedout_BuildWorldBoss( );
+        self:Lockedout_BuildCurrencyList( );
+        self:Lockedout_BuildEmissary( );
+        self:Lockedout_BuildWeeklyQuests( );
     end
         
     table.sort( LockoutDb ); -- sort the realms alphabetically
-    
-    return realmName, charNdx, playerData;
-end -- Lockedout_GetCurrentCharData()
+end -- Lockedout_RebuildAll()

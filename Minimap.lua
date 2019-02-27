@@ -473,7 +473,10 @@ function addon:ShowInfo( frame, manualToggle )
         self.tooltip = nil;
     end -- if ( self.tooltip ~= nil )
     
-    local currRealmName, currCharNdx, playerData = self:Lockedout_GetCurrentCharData( "abc" );
+    --local currRealmName, currCharNdx, playerData = self:Lockedout_GetCurrentCharData( "abc" );
+    --addon.playerDb = playerData;
+    --addon.currentRealm = realmName;
+    --addon.charDbIndex = charNdx;
 
     -- Acquire a tooltip with 3 columns, respectively aligned to left, center and right
     local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
@@ -494,7 +497,7 @@ function addon:ShowInfo( frame, manualToggle )
     -- get list of characters and realms for the horizontal
     local dailyLockout = self:getDailyLockoutDate();
     for realmName, characters in next, LockoutDb do
-        if( not self.config.profile.general.currentRealm ) or ( currRealmName == realmName ) then
+        if( not self.config.profile.general.currentRealm ) or ( addon.currentRealm == realmName ) then
             realmCount = realmCount + 1;
             for charNdx, charData in next, characters do
                 if( shouldDisplayChar( realmName, charData ) ) then
@@ -506,8 +509,8 @@ function addon:ShowInfo( frame, manualToggle )
                     charList[ tblNdx ].className = charData.className;
 
                     if( self.config.profile.general.loggedInFirst ) and
-                      ( realmName == currRealmName ) and 
-                      (currCharNdx == charNdx) then
+                      ( addon.currentRealm == realmName ) and 
+                      ( addon.charDbIndex == charNdx ) then
                         charList[ tblNdx ].priority = 0;
                     else
                         charList[ tblNdx ].priority = 1;
