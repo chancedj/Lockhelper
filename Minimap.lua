@@ -125,15 +125,15 @@ local function displayReset( self )
 end -- function( data )
 
 local function handleResetDisplay( tooltip, lineNum, colNdx, anchor, data )
-    if( addon.config.profile.general.showResetTime ) then
-        if( data.displayText ~= "" ) then
+    if( data.displayText ~= "" ) then
+	    if( addon.config.profile.general.showResetTime ) then
+        	anchor.displayTT  = emptyFunction;
             tooltip:SetCell( lineNum, colNdx, getDisplayTime( data.resetDate ), nil, "CENTER" );
-        end;
-        anchor.displayTT  = emptyFunction;
-    else
-        anchor.displayTT  = displayReset;
-        tooltip:SetCell( lineNum, colNdx, data.displayText, nil, "CENTER" );
-    end
+	    else
+        	anchor.displayTT  = displayReset;
+	        tooltip:SetCell( lineNum, colNdx, data.displayText, nil, "CENTER" );
+	    end
+    end;
 end;
 
 local function populateInstanceData( header, tooltip, charList, instanceList )
