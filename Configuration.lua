@@ -589,12 +589,12 @@ end
 function addon:EVENT_SaveToInstance( event )
     addon:debug( "EVENT_SaveToInstance: ", event );
 
-	self:RegisterEvent( "UPDATE_INSTANCE_INFO", "EVENT_UpdateInstanceInfo" );
-	RequestRaidInfo();
+    self:RegisterEvent( "UPDATE_INSTANCE_INFO", "EVENT_UpdateInstanceInfo" );
+    RequestRaidInfo();
 end
 
 function addon:EVENT_UpdateInstanceInfo()
-	self:UnregisterEvent( "UPDATE_INSTANCE_INFO" );
+    self:UnregisterEvent( "UPDATE_INSTANCE_INFO" );
 
 	self:Lockedout_BuildInstanceLockout();
 end
@@ -604,7 +604,8 @@ function addon:EVENT_ResetExpiredData( event )
 
     self:InitCharDB()
     self:checkExpiredLockouts( );
-    
+    self:IncrementInstanceLockCount();
+
     self.config:RegisterDefaults( self:getDefaultOptions() );
 end
 

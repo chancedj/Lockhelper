@@ -15,17 +15,17 @@ local next, type, table, select, tsort = -- variables
 -- cache blizzard function/globals
 local GetRealmName, GetNumRFDungeons, GetRFDungeonInfo,                                        -- variables
       GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetSavedInstanceInfo,
-      GetSavedInstanceEncounterInfo, SendChatMessage, IsInGroup, IsInRaid,
-      C_GetMapTable, C_GetWeeklyBestForMap, C_GetMapUIInfo,
-      C_GetOwnedKeystoneChallengeMapID, C_GetOwnedKeystoneLevel,
-      C_RequestMapInfo, C_RequestRewards                                          =
+      GetSavedInstanceEncounterInfo, SendChatMessage, IsInGroup, IsInRaid, IsInInstance,
+      C_GetMapTable, C_GetWeeklyBestForMap, C_GetMapUIInfo, EJ_GetInstanceForMap,
+      C_GetOwnedKeystoneChallengeMapID, C_GetOwnedKeystoneLevel, GetServerTime,
+      C_RequestMapInfo, C_RequestRewards, C_GetBestMapForUnit, EJ_GetInstanceInfo                                          =
 
       GetRealmName, GetNumRFDungeons, GetRFDungeonInfo,                                        -- blizzard api
       GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetSavedInstanceInfo,
-      GetSavedInstanceEncounterInfo, SendChatMessage, IsInGroup, IsInRaid,
-      C_ChallengeMode.GetMapTable, C_MythicPlus.GetWeeklyBestForMap, C_ChallengeMode.GetMapUIInfo,
-      C_MythicPlus.GetOwnedKeystoneChallengeMapID, C_MythicPlus.GetOwnedKeystoneLevel,
-      C_MythicPlus.RequestMapInfo, C_MythicPlus.RequestRewards
+      GetSavedInstanceEncounterInfo, SendChatMessage, IsInGroup, IsInRaid, IsInInstance,
+      C_ChallengeMode.GetMapTable, C_MythicPlus.GetWeeklyBestForMap, C_ChallengeMode.GetMapUIInfo, EJ_GetInstanceForMap,
+      C_MythicPlus.GetOwnedKeystoneChallengeMapID, C_MythicPlus.GetOwnedKeystoneLevel, GetServerTime,
+      C_MythicPlus.RequestMapInfo, C_MythicPlus.RequestRewards, C_Map.GetBestMapForUnit, EJ_GetInstanceInfo
 
 local function convertDifficulty(difficulty)
     if difficulty == 1 then         return L[ "Normal" ],       L[ "N" ];
@@ -159,9 +159,76 @@ function addon:GetConnectedRealms()
 end
 --]]
 
-local function callbackResetInstances()
+local function getPlayerInstanceId()
+	return EJ_GetInstanceForMap(C_GetBestMapForUnit("player"));
+end
+
+local function getInstanceName( instanceId )
+	local instanceName = EJ_GetInstanceInfo( instanceId );
+
+	return instanceName
+end
+
+local function lockedInstanceInList( instanceId )
+	local found = false;
+
+	for _, lockData in next, instanceLockData do
+		if ( lockData.instanceId == instanceId ) and ( not lockData.instanceWasReset ) then
+			print( "found instance: ", getInstanceName( lockData.instanceId ) );
+
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function flagInstancesAsReset()
+	for i = 1, #instanceLockData do
+		if( not instanceLockData[ i ].instanceWasReset ) then
+			print( "flagged as reset: ", getInstanceName( instanceLockData[ i ].instanceId ) );
+			instanceLockData[ i ].instanceWasReset = true;
+		end
+	end
+end
+
+-- TODO: Call on BOSS_KILL event
+function addon:IncrementInstanceLockCount()
+	local instanceId = getPlayerInstanceId();
+	if( instanceId > 0 ) and ( not lockedInstanceInList( instanceId ) ) then
+		local _, _, charData = self:Lockedout_GetCurrentCharData();
+		local instanceLockData = charData.instanceLockData or {}
+
+	--[[
+		* call on BOSS_KILL
+		* if in instance, save info as new info (if lookup returns false)
+		* if leaving instance and NOT saved, remove from stack
+		* if leaving instance and SAVED, leave as is.
+		* if instance is reset and nothing saved - does it count?
+	--]]
+		print( "adding instance to list." );
+        instanceLockData[ #instanceLockData + 1 ] = {
+                                                        instanceId = instanceId,
+                                                        savedToInstance = false,
+                                                        timeSaved = GetServerTime(),
+                                                        instanceWasReset = false
+                                                    };
+	end
+end
+
+local function callbackResetInstances( test )
     local msg = addonName .. " - " .. L["Instances Reset"];
-    
+    local instanceId = getPlayerInstanceId();
+
+    if( instanceId ~= 0 ) then
+    	print( "Reset can only be successful outside of the instance." );
+    	return;
+    end
+
+	-- we maintain a list of instances.  when the reset is called,
+	-- flag them as reset so we can keep incrementing the list.
+    flagInstancesAsReset();
+
     if( IsInRaid() ) then
         SendChatMessage( msg, "RAID" );
     elseif( IsInGroup() ) then
@@ -170,6 +237,7 @@ local function callbackResetInstances()
         print( msg );
     end
 end
+
 -- hook in after function is defined
 hooksecurefunc("ResetInstances", callbackResetInstances);
 
@@ -235,7 +303,7 @@ function addon:Lockedout_BuildInstanceLockout( )
         end
     end
     --]]
-    
+
     removeUntouchedInstances( instances );
     
     addon.playerDb.instances = instances;
