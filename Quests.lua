@@ -114,7 +114,7 @@ local QUEST_LIBRARY = {
     ["islandex"]            = {name=L["Island Expeditions"],            startNdx=1, endNdx=1, resetForm="weekly", checkStatus=checkQuestStatus,         checkFullfilled=true,  copyAccountWide=false, checkIDs={53435, 53436} }
 };
 
-function addon:Lockedout_BuildWeeklyQuests( realmName, charNdx )
+function addon:Lockedout_BuildWeeklyQuests( )
     local weeklyQuests = {}; -- initialize weekly quest table;
 
     local calculatedResetDate = addon:getWeeklyLockoutDate();
@@ -141,5 +141,5 @@ function addon:Lockedout_BuildWeeklyQuests( realmName, charNdx )
         end
     end -- for bossId, bossData in next, WORLD_BOSS_LIST
  
-    LockoutDb[ realmName ][ charNdx ].weeklyQuests = weeklyQuests;
+    addon.playerDb.weeklyQuests = weeklyQuests;
 end -- Lockedout_BuildInstanceLockout()

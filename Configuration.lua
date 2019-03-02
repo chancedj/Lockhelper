@@ -562,19 +562,15 @@ end
 function addon:EVENT_TimePlayed( event, timePlayed, currentPlayedLevel )
     addon:debug( "EVENT_TimePlayed: ", event );
 
-    local playerData = self:InitCharDB( );
     self.lastTimePlayedUpdate = time();
-    
-    playerData.timePlayed = { total = timePlayed, currentLevel = currentPlayedLevel };
+    self.playerDb.timePlayed = { total = timePlayed, currentLevel = currentPlayedLevel };
 end
 
 function addon:EVENT_Logout( event )
     addon:debug( "EVENT_Logout: ", event );
 
     self.loggingOut = true;
-    local playerData = self:InitCharDB( );
-    
-    playerData.lastLogin = time();
+    self.playerDb.lastLogin = time();
     
     -- means we fired before, and we can go ahead and force an update
     if( self.lastTimePlayedUpdate ) then
@@ -600,7 +596,7 @@ end
 function addon:EVENT_UpdateInstanceInfo()
     self:UnregisterEvent( "UPDATE_INSTANCE_INFO" );
 
-    self:EVENT_FullCharacterRefresh();
+	self:Lockedout_BuildInstanceLockout();
 end
 
 function addon:EVENT_ResetExpiredData( event )
@@ -616,5 +612,5 @@ end
 function addon:EVENT_FullCharacterRefresh( event )
     addon:debug( "EVENT_FullCharacterRefresh: ", event );
 
-    self:Lockedout_GetCurrentCharData( "refresh" );
+    self:Lockedout_RebuildAll( );
 end

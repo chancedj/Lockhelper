@@ -241,7 +241,7 @@ end
 -- hook in after function is defined
 hooksecurefunc("ResetInstances", callbackResetInstances);
 
-function addon:Lockedout_BuildInstanceLockout( realmName, charNdx )
+function addon:Lockedout_BuildInstanceLockout( )
     local instances = {}; -- initialize instance table;
     
     ---[[
@@ -306,5 +306,5 @@ function addon:Lockedout_BuildInstanceLockout( realmName, charNdx )
 
     removeUntouchedInstances( instances );
     
-    LockoutDb[ realmName ][ charNdx ].instances = instances;
+    addon.playerDb.instances = instances;
 end -- Lockedout_BuildInstanceLockout()

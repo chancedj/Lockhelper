@@ -398,6 +398,11 @@ function addon:deleteChar( realmName, charNdx )
                 LockoutDb[ realmName ] = nil;
             end
         end
+
+        if( addon.currentRealm == realmName ) and ( addon.charDbIndex == charNdx ) then
+        	print( "current char deleted!  rebuilding now." );
+        	self:Lockedout_RebuildAll();
+		end
     end
 end
 --]]
