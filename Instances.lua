@@ -214,15 +214,13 @@ function addon:IncrementInstanceLockCount()
         * if leaving instance and SAVED, leave as is.
         * if instance is reset and nothing saved - does it count?
     --]]
-        print( "adding instance to list." );
+        print( "adding instance to list: ", getInstanceName( instanceId ) );
         instanceLockData[ #instanceLockData + 1 ] = {
                                                         instanceId = instanceId,
                                                         savedToInstance = false,
                                                         timeSaved = GetServerTime(),
                                                         instanceWasReset = false
                                                     };
-    else
-        print( "player left instance. ");
     end
 
      addon.playerDb.instanceLockData = instanceLockData;
