@@ -492,6 +492,7 @@ function addon:OnInitialize()
 
     -- events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD", "EVENT_ResetExpiredData" );
+    self:RegisterEvent( "ZONE_CHANGED_NEW_AREA", "EVENT_CheckEnteredInstance" );
     self:RegisterBucketEvent( "UNIT_QUEST_LOG_CHANGED", 1, "EVENT_FullCharacterRefresh" );
     self:RegisterEvent( "WORLD_QUEST_COMPLETED_BY_SPELL", "EVENT_FullCharacterRefresh" );
     self:RegisterEvent( "BAG_UPDATE", "EVENT_FullCharacterRefresh" );
@@ -599,12 +600,17 @@ function addon:EVENT_UpdateInstanceInfo()
 	self:Lockedout_BuildInstanceLockout();
 end
 
+function addon:EVENT_CheckEnteredInstance( event )
+    addon:debug( "EVENT_CheckEnteredInstance: ", event );
+
+    self:IncrementInstanceLockCount();
+end
+
 function addon:EVENT_ResetExpiredData( event )
     addon:debug( "EVENT_ResetExpiredData: ", event );
 
     self:InitCharDB()
     self:checkExpiredLockouts( );
-    self:IncrementInstanceLockCount();
 
     self.config:RegisterDefaults( self:getDefaultOptions() );
 end

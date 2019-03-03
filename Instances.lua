@@ -160,7 +160,14 @@ end
 --]]
 
 local function getPlayerInstanceId()
-	return EJ_GetInstanceForMap(C_GetBestMapForUnit("player"));
+    local MapId = C_GetBestMapForUnit("player");
+
+    -- if it returns 0 the data is not ready yet.
+    if( MapId == 0) then
+        return 0;
+    end
+
+	return EJ_GetInstanceForMap( MapId );
 end
 
 local function getInstanceName( instanceId )
@@ -171,6 +178,7 @@ end
 
 local function lockedInstanceInList( instanceId )
 	local found = false;
+    local instanceLockData = addon.playerDb.instanceLockData
 
 	for _, lockData in next, instanceLockData do
 		if ( lockData.instanceId == instanceId ) and ( not lockData.instanceWasReset ) then
@@ -184,6 +192,8 @@ local function lockedInstanceInList( instanceId )
 end
 
 local function flagInstancesAsReset()
+    local instanceLockData = addon.playerDb.instanceLockData;
+
 	for i = 1, #instanceLockData do
 		if( not instanceLockData[ i ].instanceWasReset ) then
 			print( "flagged as reset: ", getInstanceName( instanceLockData[ i ].instanceId ) );
@@ -195,10 +205,8 @@ end
 -- TODO: Call on BOSS_KILL event
 function addon:IncrementInstanceLockCount()
 	local instanceId = getPlayerInstanceId();
+    local instanceLockData = addon.playerDb.instanceLockData or {};
 	if( instanceId > 0 ) and ( not lockedInstanceInList( instanceId ) ) then
-		local _, _, charData = self:Lockedout_GetCurrentCharData();
-		local instanceLockData = charData.instanceLockData or {}
-
 	--[[
 		* call on BOSS_KILL
 		* if in instance, save info as new info (if lookup returns false)
@@ -213,7 +221,11 @@ function addon:IncrementInstanceLockCount()
                                                         timeSaved = GetServerTime(),
                                                         instanceWasReset = false
                                                     };
+    else
+        print( "player left instance. ");
 	end
+
+     addon.playerDb.instanceLockData = instanceLockData;
 end
 
 local function callbackResetInstances( test )
