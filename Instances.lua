@@ -140,10 +140,10 @@ end -- removeUntouchedInstances()
 ---[[
 local connectedRealms = {};
 function addon:GetConnectedRealms()
-	if ( #connectedRealms > 0 ) then
-		addon:debug( "pulling from cache" );
-		return connectedRealms;
-	end
+    if ( #connectedRealms > 0 ) then
+        addon:debug( "pulling from cache" );
+        return connectedRealms;
+    end
 
     local libRealm = LibStub("LibRealmInfo");
     local realmIdList = select( 9, libRealm:GetRealmInfo( GetRealmName() ) );
@@ -167,54 +167,54 @@ local function getPlayerInstanceId()
         return 0;
     end
 
-	return EJ_GetInstanceForMap( MapId );
+    return EJ_GetInstanceForMap( MapId );
 end
 
 local function getInstanceName( instanceId )
-	local instanceName = EJ_GetInstanceInfo( instanceId );
+    local instanceName = EJ_GetInstanceInfo( instanceId );
 
-	return instanceName
+    return instanceName
 end
 
 local function lockedInstanceInList( instanceId )
-	local found = false;
+    local found = false;
     local instanceLockData = addon.playerDb.instanceLockData
 
-	for _, lockData in next, instanceLockData do
-		if ( lockData.instanceId == instanceId ) and ( not lockData.instanceWasReset ) then
-			print( "found instance: ", getInstanceName( lockData.instanceId ) );
+    for _, lockData in next, instanceLockData do
+        if ( lockData.instanceId == instanceId ) and ( not lockData.instanceWasReset ) then
+            print( "found instance: ", getInstanceName( lockData.instanceId ) );
 
-			return true;
-		end
-	end
+            return true;
+        end
+    end
 
-	return false;
+    return false;
 end
 
 local function flagInstancesAsReset()
     local instanceLockData = addon.playerDb.instanceLockData;
 
-	for i = 1, #instanceLockData do
-		if( not instanceLockData[ i ].instanceWasReset ) then
-			print( "flagged as reset: ", getInstanceName( instanceLockData[ i ].instanceId ) );
-			instanceLockData[ i ].instanceWasReset = true;
-		end
-	end
+    for i = 1, #instanceLockData do
+        if( not instanceLockData[ i ].instanceWasReset ) then
+        print( "flagged as reset: ", getInstanceName( instanceLockData[ i ].instanceId ) );
+            instanceLockData[ i ].instanceWasReset = true;
+        end
+    end
 end
 
 -- TODO: Call on BOSS_KILL event
 function addon:IncrementInstanceLockCount()
-	local instanceId = getPlayerInstanceId();
+    local instanceId = getPlayerInstanceId();
     local instanceLockData = addon.playerDb.instanceLockData or {};
-	if( instanceId > 0 ) and ( not lockedInstanceInList( instanceId ) ) then
-	--[[
-		* call on BOSS_KILL
-		* if in instance, save info as new info (if lookup returns false)
-		* if leaving instance and NOT saved, remove from stack
-		* if leaving instance and SAVED, leave as is.
-		* if instance is reset and nothing saved - does it count?
-	--]]
-		print( "adding instance to list." );
+    if( instanceId > 0 ) and ( not lockedInstanceInList( instanceId ) ) then
+    --[[
+        * call on BOSS_KILL
+        * if in instance, save info as new info (if lookup returns false)
+        * if leaving instance and NOT saved, remove from stack
+        * if leaving instance and SAVED, leave as is.
+        * if instance is reset and nothing saved - does it count?
+    --]]
+        print( "adding instance to list." );
         instanceLockData[ #instanceLockData + 1 ] = {
                                                         instanceId = instanceId,
                                                         savedToInstance = false,
@@ -223,7 +223,7 @@ function addon:IncrementInstanceLockCount()
                                                     };
     else
         print( "player left instance. ");
-	end
+    end
 
      addon.playerDb.instanceLockData = instanceLockData;
 end
@@ -233,12 +233,12 @@ local function callbackResetInstances( test )
     local instanceId = getPlayerInstanceId();
 
     if( instanceId ~= 0 ) then
-    	print( "Reset can only be successful outside of the instance." );
-    	return;
+        print( "Reset can only be successful outside of the instance." );
+        return;
     end
 
-	-- we maintain a list of instances.  when the reset is called,
-	-- flag them as reset so we can keep incrementing the list.
+    -- we maintain a list of instances.  when the reset is called,
+    -- flag them as reset so we can keep incrementing the list.
     flagInstancesAsReset();
 
     if( IsInRaid() ) then
@@ -296,11 +296,11 @@ function addon:Lockedout_BuildInstanceLockout( )
 
     local keystoneMapId = C_GetOwnedKeystoneChallengeMapID();
     if ( keystoneMapId ) then
-    	local keystoneMapName = C_GetMapUIInfo( keystoneMapId );
-    	local keystoneLevel = C_GetOwnedKeystoneLevel();
+        local keystoneMapName = C_GetMapUIInfo( keystoneMapId );
+        local keystoneLevel = C_GetOwnedKeystoneLevel();
         
         addon:debug( "info: " .. keystoneMapName .." (" .. keystoneMapId .. ") level: " .. keystoneLevel );
-		addKeystoneData( addon.KEY_KEYSTONE, instances, keystoneMapName, keystoneLevel, calculatedResetDate );
+        addKeystoneData( addon.KEY_KEYSTONE, instances, keystoneMapName, keystoneLevel, calculatedResetDate );
     end
 
     ---[[
@@ -309,7 +309,7 @@ function addon:Lockedout_BuildInstanceLockout( )
         --local _, _, bestLevel = C_GetMapPlayerStats( mapId );
         local _, bestLevel = C_GetWeeklyBestForMap( mapId );
         if( bestLevel ) then
-	        local mapName = C_GetMapUIInfo( mapId );
+            local mapName = C_GetMapUIInfo( mapId );
             addKeystoneData( addon.KEY_MYTHICBEST, instances, mapName, bestLevel, calculatedResetDate );
             addon:debug( mapName, " - bestLevel: ", bestLevel );
         end
