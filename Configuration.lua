@@ -366,10 +366,10 @@ end
 
 function addon:getConfigOptions()
     local configOptions = {
-		type = "group",
+    type = "group",
         childGroups = "tab",
-		name = addonName,
-		args = {
+    name = addonName,
+    args = {
             generalOptGroup     = getGeneralOptionConfig( self ),
             characterOptGroup   = getCharacterOptionConfig( self ),
             dungeonHeader       = getDungeonHeaderConfig( self ),
@@ -381,11 +381,10 @@ function addon:getConfigOptions()
         }
     };
 
-	return configOptions;
+    return configOptions;
 end
 
 function addon:getDefaultOptions()
-
     local currencyListDefaults = {};
     for _, currencyData in next, self:getCurrencyList() do
         if( currencyData.show ) then
@@ -400,12 +399,12 @@ function addon:getDefaultOptions()
         showCharList[ key ] = true;
     end
 
-	local defaultOptions = {
-		global = {
-			enabled = true
-		},
-		profile = {
-			minimap = {
+  local defaultOptions = {
+    global = {
+      enabled = true
+    },
+    profile = {
+      minimap = {
                 --[[
                      position can only be >= 0
                      so use this to fix the position saving issue
@@ -414,9 +413,9 @@ function addon:getDefaultOptions()
                 minimapPos = -1,
                 hide = false,
                 addonIcon = "134244",
-			},
-			general = {
-				currentRealm = false,
+      },
+      general = {
+        currentRealm = false,
                 showRealmHeader = true,
                 loggedInFirst = true,
                 anchorPoint = "cell",
@@ -425,24 +424,24 @@ function addon:getDefaultOptions()
                 frameScale = 1.0,
                 minTrackCharLevel = getCurrentMaxLevel(),
                 showResetTime = false
-			},
-			dungeon = {
-				show = true
-			},
-			raid = {
-				show = true
-			},
-			worldBoss = {
-				show = true,
+      },
+      dungeon = {
+        show = true
+      },
+      raid = {
+        show = true
+      },
+      worldBoss = {
+        show = true,
                 showKilledOnly = true
-			},
-			currency = {
-				show = true,
+      },
+      currency = {
+        show = true,
                 display = "long",
                 displayList = currencyListDefaults,
                 sortBy = "en",
                 displayExpansion = true
-			},
+      },
             emissary = {
                 show = true,
                 displayGroup = addon.EmissaryDisplayGroups
@@ -450,10 +449,10 @@ function addon:getDefaultOptions()
             weeklyQuest = {
                 show = true
             }
-		}
-	}
-	
-	return defaultOptions;
+    }
+  }
+  
+  return defaultOptions;
 end
 
 --[[
@@ -467,7 +466,7 @@ local function minimapPositionFix( self )
 end
 
 function addon:OnInitialize()
-	local defaultOptions = self:getDefaultOptions();
+    local defaultOptions = self:getDefaultOptions();
     self.config = LibStub( "AceDB-3.0" ):New( "LockedOutConfig", defaultOptions, true );
     self.config:RegisterDefaults( defaultOptions );
 
@@ -487,12 +486,13 @@ function addon:OnInitialize()
     LibStub( "AceConfigRegistry-3.0" ):RegisterOptionsTable( self.optionFrameName, self:getConfigOptions() );
     self.optionFrame = LibStub( "AceConfigDialog-3.0" ):AddToBlizOptions( self.optionFrameName, addonName );
     self.optionFrame.default = function() self:ResetDefaults() end;
-	  self:RegisterChatCommand( "lo", "ChatCommand" );
-	  self:RegisterChatCommand( "lockedout", "ChatCommand" );
+    self:RegisterChatCommand( "lo", "ChatCommand" );
+    self:RegisterChatCommand( "lockedout", "ChatCommand" );
 
     -- events
     self:RegisterEvent( "PLAYER_ENTERING_WORLD", "EVENT_ResetExpiredData" );
     self:RegisterEvent( "ZONE_CHANGED_NEW_AREA", "EVENT_CheckEnteredInstance" );
+    self:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", "EVENT_CheckEnteredInstance" );
     self:RegisterBucketEvent( "UNIT_QUEST_LOG_CHANGED", 1, "EVENT_FullCharacterRefresh" );
     self:RegisterEvent( "WORLD_QUEST_COMPLETED_BY_SPELL", "EVENT_FullCharacterRefresh" );
     self:RegisterEvent( "BAG_UPDATE", "EVENT_FullCharacterRefresh" );
@@ -530,11 +530,11 @@ function addon:OpenConfigDialog( button )
     self.config:RegisterDefaults( self:getDefaultOptions() );
     LibStub( "AceConfigRegistry-3.0" ):RegisterOptionsTable( self.optionFrameName, self:getConfigOptions() );
 
-	if( button == nil) or ( button == "RightButton" ) then
-		-- this command is buggy, open it twice to fix the bug.
-		InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #1
-		InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #2
-	end
+  if( button == nil) or ( button == "RightButton" ) then
+    -- this command is buggy, open it twice to fix the bug.
+    InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #1
+    InterfaceOptionsFrame_OpenToCategory( self.optionFrame ); -- #2
+  end
     
     --[[ this helps to build the currency table
     local currList = self:getCurrencyList();
@@ -597,11 +597,20 @@ end
 function addon:EVENT_UpdateInstanceInfo()
     self:UnregisterEvent( "UPDATE_INSTANCE_INFO" );
 
-	self:Lockedout_BuildInstanceLockout();
+    self:Lockedout_BuildInstanceLockout();
 end
 
 function addon:EVENT_CheckEnteredInstance( event )
     addon:debug( "EVENT_CheckEnteredInstance: ", event );
+
+    -- force a refresh every time something dies...in an effort to keep the latest time updating.
+    if( event == "COMBAT_LOG_EVENT_UNFILTERED" ) then
+        local _, eventType = CombatLogGetCurrentEventInfo();
+
+        if( eventType ~= "UNIT_DIED" ) then
+            return;
+        end
+    end
 
     self:IncrementInstanceLockCount();
 end

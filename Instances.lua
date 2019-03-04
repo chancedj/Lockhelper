@@ -103,6 +103,23 @@ local function addKeystoneData( difficultyName, instanceData, instanceName, diff
     return instanceData[ key ][ difficultyName ];
 end
 
+function addon:removeExpiredInstances()
+    local currentTime = GetServerTime() - (60 * 60);
+
+    for realmName, realmData in next, LockoutDb do
+        for charNdx, charData in next, realmData do
+            local instanceLockData = charData.instanceLockData or {};
+            for i = #instanceLockData, 1, -1 do
+                local secondsElapsed = currentTime - instanceLockData[ i ].timeSaved;
+
+                if( secondsElapsed > 0) then
+                    instanceLockData[ i ] = nil;
+                end
+            end
+        end
+    end
+end
+
 local function removeUntouchedInstances( instances )
     -- fix up the displayText now, and remove instances with no boss kills.
     for instanceKey, instanceDetails in next, instances do
@@ -138,15 +155,16 @@ local function removeUntouchedInstances( instances )
 end -- removeUntouchedInstances()
 
 ---[[
-local connectedRealms = {};
-function addon:GetConnectedRealms()
-    if ( #connectedRealms > 0 ) then
+local connectedRealmsCache = { {} };
+function addon:GetConnectedRealms( realmName )
+    if ( connectedRealmsCache[ realmName] ) and ( #connectedRealmsCache[ realmName] > 0 ) then
         addon:debug( "pulling from cache" );
-        return connectedRealms;
+        return connectedRealmsCache[ realmName];
     end
 
     local libRealm = LibStub("LibRealmInfo");
-    local realmIdList = select( 9, libRealm:GetRealmInfo( GetRealmName() ) );
+    local realmIdList = select( 9, libRealm:GetRealmInfo( realmName ) );
+    local connectedRealms = {}
 
     for i = 1, #realmIdList do
       local _, connectedName, connectedApiName = libRealm:GetRealmInfoByID( realmIdList[ i ] );
@@ -155,7 +173,9 @@ function addon:GetConnectedRealms()
 
     addon:debug( "Instance lock applies to these realms: ", table.concat( connectedRealms, ", ") );
 
-    return connectedRealms;
+    connectedRealmsCache[ realmName] = connectedRealms;
+
+    return connectedRealmsCache[ realmName ];
 end
 --]]
 
@@ -170,10 +190,17 @@ local function getPlayerInstanceId()
     return EJ_GetInstanceForMap( MapId );
 end
 
-local function getInstanceName( instanceId )
-    local instanceName = EJ_GetInstanceInfo( instanceId );
+local instanceNameCache = {};
+function addon:GetInstanceName( instanceId )
+    local instanceName = instanceNameCache[ instanceId ];
 
-    return instanceName
+    if( instanceName ) then
+        return instanceName;
+    end
+
+    instanceNameCache[ instanceId ] = EJ_GetInstanceInfo( instanceId );
+
+    return instanceNameCache[ instanceId ]
 end
 
 local function lockedInstanceInList( instanceId )
@@ -182,13 +209,13 @@ local function lockedInstanceInList( instanceId )
 
     for _, lockData in next, instanceLockData do
         if ( lockData.instanceId == instanceId ) and ( not lockData.instanceWasReset ) then
-            print( "found instance: ", getInstanceName( lockData.instanceId ) );
+            addon:debug( "found instance: ", addon:GetInstanceName( lockData.instanceId ) );
 
-            return true;
+            return lockData;
         end
     end
 
-    return false;
+    return nil;
 end
 
 local function flagInstancesAsReset()
@@ -196,7 +223,7 @@ local function flagInstancesAsReset()
 
     for i = 1, #instanceLockData do
         if( not instanceLockData[ i ].instanceWasReset ) then
-        print( "flagged as reset: ", getInstanceName( instanceLockData[ i ].instanceId ) );
+            addon:debug( "flagged as reset: ", addon:GetInstanceName( instanceLockData[ i ].instanceId ) );
             instanceLockData[ i ].instanceWasReset = true;
         end
     end
@@ -204,23 +231,29 @@ end
 
 -- TODO: Call on BOSS_KILL event
 function addon:IncrementInstanceLockCount()
+    addon:removeExpiredInstances();
     local instanceId = getPlayerInstanceId();
     local instanceLockData = addon.playerDb.instanceLockData or {};
-    if( instanceId > 0 ) and ( not lockedInstanceInList( instanceId ) ) then
-    --[[
-        * call on BOSS_KILL
-        * if in instance, save info as new info (if lookup returns false)
-        * if leaving instance and NOT saved, remove from stack
-        * if leaving instance and SAVED, leave as is.
-        * if instance is reset and nothing saved - does it count?
-    --]]
-        print( "adding instance to list: ", getInstanceName( instanceId ) );
-        instanceLockData[ #instanceLockData + 1 ] = {
-                                                        instanceId = instanceId,
-                                                        savedToInstance = false,
-                                                        timeSaved = GetServerTime(),
-                                                        instanceWasReset = false
-                                                    };
+    if( instanceId > 0 ) then
+        local lockedInstance = lockedInstanceInList( instanceId );
+        if( lockedInstance ) then
+            lockedInstance.timeSaved = GetServerTime();
+        else
+        --[[
+            * call on BOSS_KILL
+            * if in instance, save info as new info (if lookup returns false)
+            * if leaving instance and NOT saved, remove from stack
+            * if leaving instance and SAVED, leave as is.
+            * if instance is reset and nothing saved - does it count?
+        --]]
+            addon:debug( "adding instance to list: ", addon:GetInstanceName( instanceId ) );
+            instanceLockData[ #instanceLockData + 1 ] = {
+                                                            instanceId = instanceId,
+                                                            savedToInstance = false,
+                                                            timeSaved = GetServerTime(),
+                                                            instanceWasReset = false
+                                                        };
+        end
     end
 
      addon.playerDb.instanceLockData = instanceLockData;

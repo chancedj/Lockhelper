@@ -8,8 +8,8 @@ local addon = LibStub( "AceAddon-3.0" ):GetAddon( addonName );
 local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- cache lua functions
-local print, type, tonumber =                      -- variables
-      print, type, tonumber                        -- lua functions
+local print, type, tonumber, setmetatable, tonumber, next, pairs, tinsert, tsort =                  -- variables
+      print, type, tonumber, setmetatable, tonumber, next, pairs, table.insert, table.sort          -- lua functions
 
 -- cache blizzard function/globals
 local GetCurrentRegion, GetServerTime, GetCurrencyInfo, GetQuestResetTime, GetItemInfo,
@@ -33,7 +33,7 @@ addon.EmissaryDisplayGroups = {
     [ "7" ] = L["BfA"]
 }
 
-addon.KEY_KEYSTONE = "keystone";
+addon.KEY_KEYSTONE   = "keystone";
 addon.KEY_MYTHICBEST = "mythicbest";
 
 local iconTextures = {
@@ -319,14 +319,14 @@ end
 
 local MyScanningTooltip = CreateFrame("GameTooltip", "MyScanningTooltip", UIParent, "GameTooltipTemplate")
 local QuestTitleFromID = setmetatable({}, { __index = function(t, id)
-	MyScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	MyScanningTooltip:SetHyperlink("quest:"..id)
-	local title = MyScanningTooltipTextLeft1:GetText()
-	MyScanningTooltip:Hide()
-	if title and title ~= RETRIEVING_DATA then
-		t[id] = title
-		return title
-	end
+    MyScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    MyScanningTooltip:SetHyperlink("quest:"..id)
+    local title = MyScanningTooltipTextLeft1:GetText()
+    MyScanningTooltip:Hide()
+    if title and title ~= RETRIEVING_DATA then
+        t[id] = title
+        return title
+    end
 end })
 
 local _questCachDb = {};
@@ -400,9 +400,9 @@ function addon:deleteChar( realmName, charNdx )
         end
 
         if( addon.currentRealm == realmName ) and ( addon.charDbIndex == charNdx ) then
-        	print( "current char deleted!  rebuilding now." );
-        	self:Lockedout_RebuildAll();
-		end
+            addon:debug( "current char deleted!  rebuilding now." );
+            self:Lockedout_RebuildAll();
+        end
     end
 end
 --]]
@@ -411,10 +411,10 @@ end
 function addon:getKeysSortedByValue(tbl, sortFunction)
   local keys = {}
   for key in pairs(tbl) do
-    table.insert(keys, key)
+    tinsert(keys, key)
   end
 
-  table.sort(keys, function(a, b)
+  tsort(keys, function(a, b)
     return sortFunction(tbl[a], tbl[b])
   end)
 
@@ -497,25 +497,33 @@ end
 
 --- recursive printing for debug purposes
 function addon:printTable( tbl, maxDepth, depth )
-	if ( tbl == nil ) then return; end
-	if ( maxDepth ~= nil ) and ( depth == maxDepth ) then return; end
-	
-	depth = depth or 0; -- initialize depth to 0 if nil
-	local indent = strrep( "  ", depth ) .. "=>";
-	
-	for key, value in next, tbl do
-		if ( type ( value ) == "table" ) then
-			print( indent .. key );
+    if ( tbl == nil ) then return; end
+    if ( maxDepth ~= nil ) and ( depth == maxDepth ) then return; end
+    
+    depth = depth or 0; -- initialize depth to 0 if nil
+    local indent = strrep( "  ", depth ) .. "=>";
+    
+    for key, value in next, tbl do
+        if ( type ( value ) == "table" ) then
+            print( indent .. key );
 
-			-- initialize depth to 0 if nil
-			self:printTable( value, maxDepth, depth + 1 );
-		elseif( type( value ) == "boolean" ) then
-			print( indent .. key .. " - " .. fif( value, "true", "false" ) );
-		elseif( type( value ) == "function" ) then
-			print( indent .. key .. " = " .. value() );
-		else
-			print( indent .. key .. " - " .. value );
-		end -- if ( type ( value ) == "table" )
-	end -- for key, value in next, tbl
-	
+            -- initialize depth to 0 if nil
+            self:printTable( value, maxDepth, depth + 1 );
+        elseif( type( value ) == "boolean" ) then
+            print( indent .. key .. " - " .. fif( value, "true", "false" ) );
+        elseif( type( value ) == "function" ) then
+            print( indent .. key .. " = " .. value() );
+        else
+            print( indent .. key .. " - " .. value );
+        end -- if ( type ( value ) == "table" )
+    end -- for key, value in next, tbl
+    
 end 
+
+function addon:mergeTable( tTarget, tSource )
+    for k, v in next, tSource do
+        tinsert( tTarget, v );
+    end
+
+    return tTarget;
+end
