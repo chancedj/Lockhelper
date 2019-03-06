@@ -32,20 +32,20 @@ local GetRealmName, UnitName, UnitClass, UnitLevel, GetAverageItemLevel, GetQues
 --]]
 
 local function getCharIndex( characters, search_charName )
-	for charNdx, character in next, characters do
-    	if( search_charName == character.charName ) then
-    		-- found, return current index
-    		return charNdx;
-    	end
-	end
-	--[[
-    for i = 1, #characters do
-    	if( search_charName == characters[ i ].charName ) then
-    		-- found, return current index
-    		return i;
-    	end
+    for charNdx, character in next, characters do
+        if( search_charName == character.charName ) then
+            -- found, return current index
+            return charNdx;
+        end
     end
-	--]]
+    --[[
+    for i = 1, #characters do
+        if( search_charName == characters[ i ].charName ) then
+            -- found, return current index
+            return i;
+        end
+    end
+    --]]
 
     -- missing, so add a new entry
     return #characters + 1
@@ -101,11 +101,13 @@ function addon:checkExpiredLockouts()
     for realmName, characters in next, LockoutDb do
         for charNdx, charData in next, characters do
             -- initialize data if necessary
-            charData.instances      = charData.instances or {};
-            charData.worldBosses    = charData.worldBosses or {};
-            charData.emissaries     = charData.emissaries or {};
-            charData.currency       = charData.currency or {};
-            charData.weeklyQuests   = charData.weeklyQuests or {};
+            charData.instances          = charData.instances or {};
+            charData.worldBosses        = charData.worldBosses or {};
+            charData.emissaries         = charData.emissaries or {};
+            charData.currency           = charData.currency or {};
+            charData.weeklyQuests       = charData.weeklyQuests or {};
+            charData.instanceLockData   = charData.instanceLockData or {};
+            charData.holidyQuests       = charData.holidyQuests or {};
 
             if( charData.instances ~= nil ) then
                 for instanceName, instanceData in next, charData.instances do
@@ -145,7 +147,7 @@ function addon:InitCharDB()
 
         playerData.charName = charName;
         playerData.className = className;
-		playerData.currentLevel = currentLevel;
+        playerData.currentLevel = currentLevel;
         playerData.lastLogin = time();
 
         playerData.iLevel = playerData.iLevel or {};
@@ -181,6 +183,7 @@ function addon:Lockedout_RebuildAll( )
         self:Lockedout_BuildCurrencyList( );
         self:Lockedout_BuildEmissary( );
         self:Lockedout_BuildWeeklyQuests( );
+        self:Lockedout_BuildHolidayEventQuests( );
     end
         
     table.sort( LockoutDb ); -- sort the realms alphabetically

@@ -351,6 +351,18 @@ local function populateWeeklyQuestData( header, tooltip, charList, weeklyQuestLi
     tooltip:AddSeparator( );
 end -- populateInstanceData
 
+local function popuateHolidayData( header, tooltip, charList, weeklyQuestList )
+    -- make sure it's not empty
+    if ( next( weeklyQuestList ) == nil ) then return; end
+
+    -- start adding the instances we have completed with any chacters
+    local lineNum = tooltip:AddLine( );
+    tooltip.lines[ lineNum ].is_header = true;
+    tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
+
+    tooltip:AddSeparator( );
+end -- popuateHolidayData
+
 local function populateCurrencyData( header, tooltip, charList, currencyList )
     -- make sure it's not empty
     if ( next( currencyList ) == nil ) then return; end
@@ -499,9 +511,11 @@ end
 function addon:ShowInfo( frame, manualToggle )
     local events = addon:Lockedout_GetCommingEvents();
 
+    --[[
     for evntID, eventData in next, events do
         print( evntID, ": ", eventData.title );
     end
+    --]]
 
     self:removeExpiredInstances();
     if( manualToggle ~= nil ) then
@@ -814,6 +828,9 @@ function addon:ShowInfo( frame, manualToggle )
     end
     if( self.config.profile.currency.show ) then
         populateCurrencyData( L["Currency"], tooltip, charList, currencyDisplayList );
+    end
+    if( true ) then
+        popuateHolidayData( "Holiday Events", tooltip, charList, { "todo - make holiday list" } );
     end
 
     lineNum = tooltip:AddLine( );
