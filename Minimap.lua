@@ -509,14 +509,6 @@ local function shouldDisplayChar( realmName, playerData )
 end
 
 function addon:ShowInfo( frame, manualToggle )
-    local events = addon:Lockedout_GetCommingEvents();
-
-    --[[
-    for evntID, eventData in next, events do
-        print( evntID, ": ", eventData.title );
-    end
-    --]]
-
     self:removeExpiredInstances();
     if( manualToggle ~= nil ) then
         if( not manualToggle ) then
