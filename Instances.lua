@@ -184,10 +184,12 @@ local function getPlayerInstanceId()
 
     -- if it returns 0 the data is not ready yet.
     if( MapId == 0) then
-        return 0;
+        return 0, 0;
     end
 
-    return EJ_GetInstanceForMap( MapId );
+    local instanceID = EJ_GetInstanceForMap( MapId );
+    local _, _, difficulty = GetInstanceInfo();
+    return instanceID, difficulty;
 end
 
 local instanceNameCache = {};
@@ -203,12 +205,12 @@ function addon:GetInstanceName( instanceId )
     return instanceNameCache[ instanceId ]
 end
 
-local function lockedInstanceInList( instanceId )
+local function lockedInstanceInList( instanceId, difficulty )
     local found = false;
     local instanceLockData = addon.playerDb.instanceLockData
 
     for _, lockData in next, instanceLockData do
-        if ( lockData.instanceId == instanceId ) and ( not lockData.instanceWasReset ) then
+        if ( lockData.instanceId == instanceId ) and ( lockData.difficulty == difficulty ) and ( not lockData.instanceWasReset ) then
             addon:debug( "found instance: ", addon:GetInstanceName( lockData.instanceId ) );
 
             return lockData;
@@ -232,10 +234,10 @@ end
 -- TODO: Call on BOSS_KILL event
 function addon:IncrementInstanceLockCount()
     addon:removeExpiredInstances();
-    local instanceId = getPlayerInstanceId();
+    local instanceId, difficulty = getPlayerInstanceId();
     local instanceLockData = addon.playerDb.instanceLockData or {};
     if( instanceId > 0 ) then
-        local lockedInstance = lockedInstanceInList( instanceId );
+        local lockedInstance = lockedInstanceInList( instanceId, difficulty );
         if( lockedInstance ) then
             lockedInstance.timeSaved = GetServerTime();
         else
@@ -249,7 +251,7 @@ function addon:IncrementInstanceLockCount()
             addon:debug( "adding instance to list: ", addon:GetInstanceName( instanceId ) );
             instanceLockData[ #instanceLockData + 1 ] = {
                                                             instanceId = instanceId,
-                                                            savedToInstance = false,
+                                                            difficulty = difficulty,
                                                             timeSaved = GetServerTime(),
                                                             instanceWasReset = false
                                                         };
