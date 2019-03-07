@@ -524,11 +524,6 @@ function addon:ShowInfo( frame, manualToggle )
         self.tooltip = nil;
     end -- if ( self.tooltip ~= nil )
     
-    --local currRealmName, currCharNdx, playerData = self:Lockedout_GetCurrentCharData( "abc" );
-    --addon.playerDb = playerData;
-    --addon.currentRealm = realmName;
-    --addon.charDbIndex = charNdx;
-
     -- Acquire a tooltip with 3 columns, respectively aligned to left, center and right
     local tooltip = LibQTip:Acquire( "LockedoutTooltip" );
     self.tooltip = tooltip;
@@ -599,13 +594,6 @@ function addon:ShowInfo( frame, manualToggle )
                         weeklyQuestList[ questAbbr ] = questData.name;
                     end
                     
-                    --[[ TODO:  change k/v type.
-                        Key: #table (1,2,3....)
-                        table: =    code, "0", "1", .... "P"
-                                    questID, ....
-                                    emissaryName, ....
-                        sort:  =    code, emissaryName
-                    --]]
                     for questID, emData in next, charData.emissaries do
                         local title = addon:getQuestTitleByID( questID );
                         if( title ~= nil and emData.expLevel ~= nil ) then

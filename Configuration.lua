@@ -538,7 +538,7 @@ function addon:OpenConfigDialog( button )
     
     --[[ this helps to build the currency table
     local currList = self:getCurrencyList();
-    for ndx=1, 2000 do
+    for ndx=1, 2500 do
         local name = GetCurrencyInfo( ndx );
         
         if( name ~= nil ) and ( name ~= "" ) then
@@ -553,7 +553,7 @@ function addon:OpenConfigDialog( button )
         
             if( found == false ) then
                 --print( '{ ID=' .. ndx .. ', name=nil, icon=nil, expansionLevel=7, type="C", show=true }, -- ' .. name );
-                --print( "{ [" .. ndx .. "] = { ID=" .. ndx .. ", name=nil, expansionLevel=" .. GetAccountExpansionLevel() .. " } }, -- " .. name );
+                print( "{ [" .. ndx .. "] = { ID=" .. ndx .. ", name=nil, expansionLevel=" .. GetAccountExpansionLevel() .. " } }, -- " .. name );
             end
         end
     end

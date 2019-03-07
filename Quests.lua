@@ -12,10 +12,8 @@ local next = -- variables
       next   -- lua functions
 
 -- cache blizzard function/globals
-local UnitClass, GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID, GetSpellCooldown
-        , GetQuestObjectiveInfo, GetServerTime, GetTime, GetTalentTreeIDsByClassID, GetTalentTreeInfoForID, GetLFGDungeonRewards  =                       -- variables 
-      UnitClass, GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID, GetSpellCooldown
-        , GetQuestObjectiveInfo, GetServerTime, GetTime, C_Garrison.GetTalentTreeIDsByClassID, C_Garrison.GetTalentTreeInfoForID, GetLFGDungeonRewards    -- blizzard api
+local UnitClass, GetSpellCooldown, GetQuestObjectiveInfo, GetServerTime, GetLFGDungeonRewards  =                       -- variables 
+      UnitClass, GetSpellCooldown, GetQuestObjectiveInfo, GetServerTime, GetLFGDungeonRewards    -- blizzard api
 
 local BOSS_KILL_TEXT = "|T" .. READY_CHECK_READY_TEXTURE .. ":0|t";
 
@@ -51,36 +49,6 @@ local function checkQuestStatus( self )
                 return resetDate, true, totalFullfilled .. "/" .. totalRequired;
             end
             
-        end
-    end
-    
-    return 0, false, nil;
-end
-
-local function checkSpellStatus( self )
-    local _, _, classType = UnitClass( "player" );
-    local talentTreeIDs = GetTalentTreeIDsByClassID(LE_GARRISON_TYPE_7_0, classType)
-    
-    -- not working properly, so disable for now.
-    if( talentTreeIDs ) then
-        local _, treeID = next(talentTreeIDs);
-        local _, _, tree = GetTalentTreeInfoForID( treeID );
-        
-        for ndx, data in next, tree do
-            if( data.selected ) then
-                for _, spellId in next, self.checkIDs do
-                    if( data.perkSpellID == spellId ) then
-                        local start, duration, enabled = GetSpellCooldown( spellId );
-                        
-                        -- when enabled == 1, it's not ready, meaning it's on cooldown
-                        if( start > 0 ) and ( enabled == 1 ) then
-                            return GetServerTime() + ((start + duration) - GetTime()), true, BOSS_KILL_TEXT;
-                        end
-                        
-                        break;
-                    end
-                end
-            end
         end
     end
     

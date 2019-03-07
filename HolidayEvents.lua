@@ -12,9 +12,9 @@ local next = -- variables
       next   -- lua functions
 
 -- cache blizzard function/globals
-local UnitClass, GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID, GetSpellCooldown, UnitFactionGroup
+local UnitClass, GetSpellCooldown, UnitFactionGroup
         , GetQuestObjectiveInfo, GetServerTime, GetTime, GetTalentTreeIDsByClassID, GetTalentTreeInfoForID, GetLFGDungeonRewards  =                       -- variables 
-      UnitClass, GetQuestBountyInfoForMapID, GetQuestLogTitle, GetQuestLogIndexByID, GetSpellCooldown, UnitFactionGroup
+      UnitClass, GetSpellCooldown, UnitFactionGroup
         , GetQuestObjectiveInfo, GetServerTime, GetTime, C_Garrison.GetTalentTreeIDsByClassID, C_Garrison.GetTalentTreeInfoForID, GetLFGDungeonRewards    -- blizzard api
 
 local BOSS_KILL_TEXT = "|T" .. READY_CHECK_READY_TEXTURE .. ":0|t";
@@ -101,7 +101,7 @@ function addon:Lockedout_GetCommingEvents()
 
     local currentTime = GetServerTime();
     local currDp = date( "*t", currentTime );
-    local endTime = addon:getDailyLockoutDate() + (2 * 7 * 24 * 60 * 60); --currentTime + (2 * 7 * 24 * 60 * 60);
+    local endTime = addon:getDailyLockoutDate() + (2 * 7 * 24 * 60 * 60);
     local events = {};
 
     C_Calendar.SetAbsMonth( currDp.month, currDp.year );

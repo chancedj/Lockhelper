@@ -230,6 +230,7 @@ local CURRENCY_LIST = {
     { ID=1703, name=nil, icon=nil, expansionLevel=7, type="C", show=false }, -- BFA Season 1 Rated Participation Currency 
     { ID=1704, name=nil, icon=nil, expansionLevel=1, type="C", show=true },  -- Spirit Shard 
     { ID=1705, name=nil, icon=nil, expansionLevel=7, type="C", show=false }, -- Warfronts - Personal Tracker - Iron in Chest (Hidden) 
+    { ID=1714, name=nil, icon=nil, expansionLevel=7, type="C", show=false }, -- Warfronts - Personal Tracker - Wood in Chest (Hidden) 
     { ID=1710, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Seafarer's Dubloon
     { ID=1716, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Honorbound Service Medal
     { ID=1717, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- 7th Legion Service Medal
