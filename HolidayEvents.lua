@@ -87,7 +87,7 @@ local function checkQuestStatus( questID )
         end
         
         if( totalRequired > 0 ) then
-            return resetDate, true, totalFullfilled .. "/" .. totalRequired;
+            return resetDate, (totalFullfilled == totalRequired), totalFullfilled .. "/" .. totalRequired;
         end
         
     end
@@ -116,7 +116,7 @@ function addon:Lockedout_GetCommingEvents()
                 local eventEndTime      = time( {year=eventInfo.endTime.year, month=eventInfo.endTime.month, day=eventInfo.endTime.monthDay} );
 
                 if( EVENTS_TO_TRACK[ eventInfo.eventID ] ) and ( events[ eventInfo.eventID ] == nil ) then
-                    if( eventStartTime <= currentTime ) or ( eventEndTime <= endTime ) then
+                    if ( currentTime >= eventStartTime) or ( endTime <= eventEndTime ) then
                         EVENTS_TO_TRACK[ eventInfo.eventID ].title = eventInfo.title;
                         events[ eventInfo.eventID ] = {
                             startTime = eventStartTime,
@@ -169,9 +169,10 @@ function addon:Lockedout_BuildHolidayEventQuests( )
         
         allQuests = addon:mergeTable( allQuests, factionQuests );
         for _, questID in next, allQuests do
-            local resetDate, active, displayText = checkQuestStatus( questID );
+            local resetDate, completed, displayText = checkQuestStatus( questID );
             charEventData[ questID ] = {
                 resetDate = minDate( eventInfo.endTime, resetDate ),
+                completed = completed,
                 displayText = displayText;
            }
         end

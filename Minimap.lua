@@ -351,14 +351,62 @@ local function populateWeeklyQuestData( header, tooltip, charList, weeklyQuestLi
     tooltip:AddSeparator( );
 end -- populateInstanceData
 
-local function popuateHolidayData( header, tooltip, charList, weeklyQuestList )
+local function popuateHolidayData( header, tooltip, charList, holidayList )
     -- make sure it's not empty
-    if ( next( weeklyQuestList ) == nil ) then return; end
+    if ( next( holidayList ) == nil ) then return; end
 
     -- start adding the instances we have completed with any chacters
     local lineNum = tooltip:AddLine( );
     tooltip.lines[ lineNum ].is_header = true;
     tooltip:SetCell( lineNum, 1, header, nil, "CENTER" );
+
+    local currentTime = GetServerTime();
+    function countQuests( quests ) local c, t = 0, 0; for _, q in next, quests do t=t+1 if( q.completed ) then c=c+1; end; end; return c, t; end;
+    for eventID, holidayData in next, holidayList do
+        lineNum = tooltip:AddLine( );
+        tooltip:SetCell( lineNum, 1, holidayData.title, nil, "LEFT" );
+        
+        for colNdx, charData in next, charList do
+            if( holidayData.activeStatus == "PENDING" ) then
+                tooltip:SetCell( lineNum, colNdx + 1, SecondsToTime( (60 * 60) - (currentTime - holidayData.startTime ) ) , nil, "LEFT" );
+            else
+                if (LockoutDb[ charData.realmName ] ~= nil) and
+                   (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
+                   (LockoutDb[ charData.realmName ][ charData.charNdx ].holidayEvents ~= nil) then
+
+                    local eventData = LockoutDb[ charData.realmName ][ charData.charNdx ].holidayEvents[ eventID ];
+
+                    local holidayDisplay = {
+                        anchor = getAnchorPkt( "hl", eventID, eventData, lineNum, colNdx + 1 );
+                        displayTT = function( self )
+                                                local ttName = self.anchor:getTTName();
+                                                local tooltip = addon:aquireEmptyTooltip( ttName );
+                                                
+                                                tooltip:SetColumnLayout( 2 );
+                                                tooltip:AddHeader( "QuestName", "Status" );
+                                                for questID, data in next, self.anchor.data do
+                                                    local ln = tooltip:AddLine( );
+                                                    tooltip:SetLineColor( ln, 1, 1, 1, 0.1 );
+                                                    tooltip:SetCell( ln, 1, addon:getQuestTitleByID( questID ) );
+                                                    tooltip:SetCell( ln, 2, data.displayText, nil, "CENTER" );
+                                                end
+
+                                                setAnchorToTooltip( tooltip, self.anchor.lineNum, self.anchor.cellNum );
+                                                tooltip:Show();
+                                            end, -- function( data )
+                        deleteTT = emptyFunction
+                    };
+                    local completed, total = countQuests( eventData );
+                    tooltip:SetCell( lineNum, colNdx + 1, completed .. "/" .. total, nil, "CENTER" );
+
+                    tooltip:SetCellScript( lineNum, colNdx + 1, "OnEnter", function() holidayDisplay:displayTT( ); end );    -- close out tooltip when leaving
+                    tooltip:SetCellScript( lineNum, colNdx + 1, "OnLeave", function() holidayDisplay:deleteTT( ); end );    -- open tooltip with info when entering cell.
+                    tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
+
+                end -- if (LockoutDb[ charData.realmName ] ~= nil) and .....
+            end
+        end -- for colNdx, charData in next, charList
+    end
 
     tooltip:AddSeparator( );
 end -- popuateHolidayData
@@ -660,8 +708,6 @@ function addon:ShowInfo( frame, manualToggle )
             };
         end
     end
-
-    addon:printTable( holidayDisplayList );
 
     -- sort instance list
     tsort( dungeonDisplayList );
