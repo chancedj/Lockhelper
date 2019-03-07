@@ -530,13 +530,15 @@ function addon:ShowInfo( frame, manualToggle )
 
     local realmCount = 0;
     local charList = {};
-    local dungeonList = {};
-    local raidList = {};
-    local worldBossList = {};
-    local currencyList = {};
-    local emissaryList = { [ "6" ] = {}, [ "7" ] = {} }; -- initialize with the expansions
-    local weeklyQuestList = {};
+    local dungeonDisplayList = {};
+    local raidDisplayList = {};
+    local worldBossDisplayList = {};
+    local currencyDisplayList = {};
+    local emissaryDisplayList = { [ "6" ] = {}, [ "7" ] = {} }; -- initialize with the expansions
+    local weeklyQuestDisplayList = {};
+    local holidayDisplayList = {};
 
+    local currencyMappingList = {};
     local CURRENCY_LIST = self:getCurrencyList();
     local CURRENCY_LIST_MAP = self:getCurrencyListMap();
     
@@ -567,9 +569,9 @@ function addon:ShowInfo( frame, manualToggle )
                         local key, data = next( details );
                         
                         if ( data.isRaid ) then
-                            raidList[ encounterName ] = encounterName;
+                            raidDisplayList[ encounterName ] = encounterName;
                         else
-                            dungeonList[ encounterName ] = encounterName;
+                            dungeonDisplayList[ encounterName ] = encounterName;
                         end -- if ( data.isRaid )
                     end -- for encounterId, _ in next, instances
                     
@@ -577,7 +579,7 @@ function addon:ShowInfo( frame, manualToggle )
                         local instanceID, bossID = strsplit( "|", bossKey );
 
                         if( instanceID ~= nil ) and ( bossID ~= nil ) then
-                            worldBossList[ bossKey ] = addon:getWorldBossName( instanceID, bossID );
+                            worldBossDisplayList[ bossKey ] = addon:getWorldBossName( instanceID, bossID );
                         end
                     end -- for bossName, _ in next, charData.worldBosses
                     
@@ -586,12 +588,12 @@ function addon:ShowInfo( frame, manualToggle )
                         local curr = CURRENCY_LIST[ currNdx ];
                         
                         if( curr ~= nil ) and ( curr.name ~= nil ) and (curr.icon ~= nil ) and ( self.config.profile.currency.displayList[ currID ] ) then
-                            currencyList[ currID ] = currNdx;
+                            currencyMappingList[ currID ] = currNdx;
                         end
                     end -- for currName, _ in next, charData.currency
                     
                     for questAbbr, questData in next, charData.weeklyQuests do
-                        weeklyQuestList[ questAbbr ] = questData.name;
+                        weeklyQuestDisplayList[ questAbbr ] = questData.name;
                     end
                     
                     for questID, emData in next, charData.emissaries do
@@ -607,14 +609,14 @@ function addon:ShowInfo( frame, manualToggle )
 
                             if( day >= 0 and day <= 3 ) then
                                 self:debug( realmName .. "." .. charData.charName .. " title: " .. title .. " day: " .. day .. " resetDate: " .. emData.resetDate );
-                                emissaryList[ emData.expLevel ][ questID ] = {
+                                emissaryDisplayList[ emData.expLevel ][ questID ] = {
                                     displayName = addon.ExpansionAbbr[ tonumber(emData.expLevel) ] .. "(+" .. day .. ") " .. title,
                                     emissaryName = title,
                                     code = tostring( day )
                                 }
                             elseif( emData.paragonReady ) then
                                 self:debug( realmName .. "." .. charData.charName .. " title: " .. title .. " day: " .. day .. " resetDate: " .. emData.resetDate );
-                                emissaryList[ emData.expLevel ][ questID ] = {
+                                emissaryDisplayList[ emData.expLevel ][ questID ] = {
                                     displayName = addon.ExpansionAbbr[ tonumber(emData.expLevel) ] .. " " .. title,
                                     emissaryName = title,
                                     code = "P"
@@ -627,9 +629,9 @@ function addon:ShowInfo( frame, manualToggle )
         end
     end -- for realmName, characters in next, LockoutDb
 
-    for key, val in next, emissaryList do
+    for key, val in next, emissaryDisplayList do
         if (not self.config.profile.emissary.displayGroup[ key ] ) then
-            emissaryList[ key ] = nil;
+            emissaryDisplayList[ key ] = nil;
         end
     end
     
@@ -637,16 +639,34 @@ function addon:ShowInfo( frame, manualToggle )
     local charSort = self:getCharSortOptions();
     tsort( charList, charSort[ self.config.profile.general.charSortBy ].sortFunction );
 
-    local currencyDisplayList = {};
-    
-    for currID, currNdx in next, currencyList do
+    for currID, currNdx in next, currencyMappingList do
         currencyDisplayList[ #currencyDisplayList + 1 ] = CURRENCY_LIST[ currNdx ];
     end
     
+    local currentHolidayEvents = self:Lockedout_GetCommingEvents();
+    local currentTime = GetServerTime();
+    for eventID, eventData in next, currentHolidayEvents do
+        if ( eventData.startTime > currentTime ) then
+            holidayDisplayList[ eventID ] = {
+                activeStatus = "PENDING",
+                startTime = eventData.startTime,
+                title = eventData.title
+            };
+        else
+            holidayDisplayList[ eventID ] = {
+                activeStatus = "CURRENT",
+                startTime = eventData.startTime,
+                title = eventData.title
+            };
+        end
+    end
+
+    addon:printTable( holidayDisplayList );
+
     -- sort instance list
-    tsort( dungeonList );
-    tsort( raidList );
-    tsort( worldBossList );
+    tsort( dungeonDisplayList );
+    tsort( raidDisplayList );
+    tsort( worldBossDisplayList );
     local currSort = self:getCurrencyOptions();
     tsort( currencyDisplayList, currSort[ self.config.profile.currency.sortBy ].sortFunction );
     
@@ -789,28 +809,28 @@ function addon:ShowInfo( frame, manualToggle )
 
     local lineNum = 0;
     if( self.config.profile.dungeon.show ) then
-        populateInstanceData( L[ "Dungeon" ], tooltip, charList, dungeonList );
+        populateInstanceData( L[ "Dungeon" ], tooltip, charList, dungeonDisplayList );
         lineNum = tooltip:AddLine( );
         tooltip:SetCell( lineNum, 1, "* " .. L["Keystone Helper"], nil, "LEFT", #charList + 1 );
         tooltip:SetLineScript( lineNum, "OnEnter", emptyFunction );
     end
     if( self.config.profile.raid.show ) then
-        populateInstanceData( L[ "Raid" ], tooltip, charList, raidList );
+        populateInstanceData( L[ "Raid" ], tooltip, charList, raidDisplayList );
     end
     if( self.config.profile.worldBoss.show ) then
-        populateWorldBossData( L["World Boss"], tooltip, charList, worldBossList );
+        populateWorldBossData( L["World Boss"], tooltip, charList, worldBossDisplayList );
     end
     if( self.config.profile.emissary.show ) then
-        populateEmissaryData( L["Emissary"], tooltip, charList, emissaryList );
+        populateEmissaryData( L["Emissary"], tooltip, charList, emissaryDisplayList );
     end
     if( self.config.profile.weeklyQuest.show ) then
-        populateWeeklyQuestData( L["Repeatable Quest"], tooltip, charList, weeklyQuestList );
+        populateWeeklyQuestData( L["Repeatable Quest"], tooltip, charList, weeklyQuestDisplayList );
     end
     if( self.config.profile.currency.show ) then
         populateCurrencyData( L["Currency"], tooltip, charList, currencyDisplayList );
     end
     if( true ) then
-        popuateHolidayData( "Holiday Events", tooltip, charList, { "todo - make holiday list" } );
+        popuateHolidayData( "Holiday Events", tooltip, charList, holidayDisplayList );
     end
 
     lineNum = tooltip:AddLine( );

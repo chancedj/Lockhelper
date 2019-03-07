@@ -81,12 +81,12 @@ local function checkQuestStatus( questID )
         local ndx = 1;
         local totalFullfilled, totalRequired = 0, 0;
         local _, _, _, numFulfilled, numRequired = GetQuestObjectiveInfo( questID, 1, false );
-        if( numFulfilled ~= nil ) then
+        if( numFulfilled ~= nil ) and ( numRequired ~= nil ) then
             totalFullfilled = totalFullfilled + numFulfilled;
             totalRequired   = totalRequired + numRequired;
         end
         
-        if( numRequired > 0 ) then
+        if( totalRequired > 0 ) then
             return resetDate, true, totalFullfilled .. "/" .. totalRequired;
         end
         
