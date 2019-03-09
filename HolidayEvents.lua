@@ -96,6 +96,19 @@ local function checkQuestStatus( questID )
     return 0, false, nil;
 end
 
+local function convertEventTime( eventTime )
+    local ts = {
+        year    = eventTime.year,
+        month   = eventTime.month,
+        day     = eventTime.monthDay,
+        hour    = eventTime.hour,
+        min     = eventTime.minute,
+        sec     = 0
+    };
+
+    return time( ts );
+end
+
 function addon:Lockedout_GetCommingEvents()
     local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
     local currentSetMonth, currentSetYear = currentCalendarTime.month, currentCalendarTime.year;
@@ -113,8 +126,8 @@ function addon:Lockedout_GetCommingEvents()
             local eventCount = C_Calendar.GetNumDayEvents( 0, day );
             for eventNum = 1, eventCount do
                 local eventInfo         = C_Calendar.GetDayEvent( 0, day, eventNum);
-                local eventStartTime    = time( {year=eventInfo.startTime.year, month=eventInfo.startTime.month, day=eventInfo.startTime.monthDay} );
-                local eventEndTime      = time( {year=eventInfo.endTime.year, month=eventInfo.endTime.month, day=eventInfo.endTime.monthDay} );
+                local eventStartTime    = convertEventTime( eventInfo.startTime );
+                local eventEndTime      = convertEventTime( eventInfo.endTime );
 
                 if( EVENTS_TO_TRACK[ eventInfo.eventID ] ) and ( events[ eventInfo.eventID ] == nil ) then
                     if ( currentTime >= eventStartTime) or ( endTime <= eventEndTime ) then
@@ -140,9 +153,10 @@ local function getCurrentEvents()
     local aciveEvents = {};
     local currentEvents = addon:Lockedout_GetCommingEvents();
 
-    local nextReset = addon:getDailyLockoutDate();
+    local currentTime = GetServerTime();
     for eventID, eventData in next, currentEvents do
-        if( eventData.startTime < nextReset) and ( eventData.endTime >= nextReset ) then
+        addon:debug( "eventID: ", eventID, " start: ", date( "%x %X", eventData.startTime ), " end: ", date( "%x %X", eventData.endTime ) );
+        if ( currentTime >= eventData.startTime) and ( currentTime <= eventData.endTime ) then
             aciveEvents[ eventID ] = eventData;
         end
     end
