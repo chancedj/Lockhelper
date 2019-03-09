@@ -17,20 +17,6 @@ local next, time =
 local GetRealmName, UnitName, UnitClass, UnitLevel, GetAverageItemLevel, GetQuestResetTime =  -- variables 
       GetRealmName, UnitName, UnitClass, UnitLevel, GetAverageItemLevel, GetQuestResetTime;   -- blizzard api
 
---[[
-    this will generate the saved data for characters and realms
-    
-    the data is stored in this way [key] (prop1, prop2, ...):
-    
-    [realmName]
-        [playerNdx] (charName, className,currIlvl, maxIlvl, instances)
-            instances() = [instanceName]
-                            [difficultyName] (bossData, locked, displayText)
-                                [bossNdx] (bossName, isKilled)
-            worldbosses() = [bossName]
-    
---]]
-
 local function getCharIndex( characters, search_charName )
     for charNdx, character in next, characters do
         if( search_charName == character.charName ) then
