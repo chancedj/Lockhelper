@@ -336,7 +336,7 @@ local function popuateHolidayData( header, tooltip, charList, holidayList )
                    (LockoutDb[ charData.realmName ][ charData.charNdx ] ~= nil) and
                    (LockoutDb[ charData.realmName ][ charData.charNdx ].holidayEvents ~= nil) then
 
-                    local eventData = LockoutDb[ charData.realmName ][ charData.charNdx ].holidayEvents[ eventID ];
+                    local eventData = LockoutDb[ charData.realmName ][ charData.charNdx ].holidayEvents[ eventID ] or {};
 
                     local holidayDisplay = {
                         anchor = getAnchorPkt( "hl", eventID, eventData, lineNum, colNdx + 1 );
@@ -425,7 +425,7 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
                                                     local tooltip = addon:aquireEmptyTooltip( ttName );
                                                     
                                                     tooltip:SetColumnLayout( 1 );
-                                                    tooltip:AddHeader( L"Quest Name"] );
+                                                    tooltip:AddHeader( L["Quest Name"] );
                                                     for ndx, questID in next, self.anchor.data.bonus do
                                                         addon:debug( "questID: " .. questID );
                                                         if( questID > 3 ) then

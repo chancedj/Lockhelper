@@ -89,7 +89,7 @@ local function clearHolidayQuests( dataTable )
             end
         end
 
-        local key = next(questData);
+        local key = next(dataTable[ eventID ]);
         -- if quest data is all empty, nuke the event data.
         if( key == nil ) then
             dataTable[ eventID ] = nil;

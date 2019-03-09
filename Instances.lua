@@ -275,7 +275,7 @@ function addon:IncrementInstanceLockCount()
     local instanceId, difficulty = getPlayerInstanceId();
     local instanceLockData = addon.playerDb.instanceLockData or {};
 
-    local lockedTotal = getLockDataByRealm( );
+    local lockedTotal = addon:getLockDataByRealm( );
     if( lockedTotal > 5 ) then
         print( sfmt(L["You have used %d/10 instance locks this hour."], lockedTotal) );
     end
