@@ -165,7 +165,7 @@ local function populateInstanceData( header, tooltip, charList, instanceList )
                                                 local col = 2;
                                                 
                                                 tooltip:SetColumnLayout( 1 );
-                                                tooltip:AddHeader( "Boss Name" );
+                                                tooltip:AddHeader( L["Boss Name"] );
                                                 local hasBossData = false;
                                                 local resetAssigned = true;
                                                 for difficulty, instanceData in next, self.anchor.data do
@@ -345,7 +345,7 @@ local function popuateHolidayData( header, tooltip, charList, holidayList )
                                                 local tooltip = addon:aquireEmptyTooltip( ttName );
                                                 
                                                 tooltip:SetColumnLayout( 2 );
-                                                tooltip:AddHeader( "QuestName", "Status" );
+                                                tooltip:AddHeader( L["Quest Name"], L["Status"] );
                                                 for questID, data in next, self.anchor.data do
                                                     local ln = tooltip:AddLine( );
                                                     tooltip:SetLineColor( ln, 1, 1, 1, 0.1 );
@@ -425,7 +425,7 @@ local function populateCurrencyData( header, tooltip, charList, currencyList )
                                                     local tooltip = addon:aquireEmptyTooltip( ttName );
                                                     
                                                     tooltip:SetColumnLayout( 1 );
-                                                    tooltip:AddHeader( "Quest Name" );
+                                                    tooltip:AddHeader( L"Quest Name"] );
                                                     for ndx, questID in next, self.anchor.data.bonus do
                                                         addon:debug( "questID: " .. questID );
                                                         if( questID > 3 ) then
@@ -706,14 +706,14 @@ function addon:ShowInfo( frame, manualToggle )
                                                 local currentTime = GetServerTime();
                                                 line = tooltip:AddHeader( "" );
                                                 tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
-                                                tooltip:SetCell( line, 1, "Locked Instances", 4 );
+                                                tooltip:SetCell( line, 1, L["Locked Instances"], 4 );
                                                 
                                                 line = tooltip:AddHeader( "" );
                                                 tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
-                                                tooltip:SetCell( line, 1, "Time Remaining" );
-                                                tooltip:SetCell( line, 2, "Realm Name" );
-                                                tooltip:SetCell( line, 3, "Char Name" );
-                                                tooltip:SetCell( line, 4, "Instance Name" );
+                                                tooltip:SetCell( line, 1, L["Time Remaining"] );
+                                                tooltip:SetCell( line, 2, L["Realm Name"] );
+                                                tooltip:SetCell( line, 3, L["Char Name"] );
+                                                tooltip:SetCell( line, 4, L["Instance Name"] );
                                                 
                                                 for k, p in next, self.anchor.data do
                                                     line = tooltip:AddHeader( "" );
@@ -759,7 +759,7 @@ function addon:ShowInfo( frame, manualToggle )
                                     if ( self.anchor.data.timePlayed ) then
                                         line = tooltip:AddHeader( "" );
                                         tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
-                                        tooltip:SetCell( line, 1, "Time Played", 2 );
+                                        tooltip:SetCell( line, 1, L["Time Played"], 2 );
                                         for k, p in next, self.anchor.data.timePlayed do
                                             line = tooltip:AddLine( k, SecondsToTime( p, false, false, 5 ) );
                                             tooltip:SetLineScript( line, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
@@ -769,7 +769,7 @@ function addon:ShowInfo( frame, manualToggle )
                                     if ( self.anchor.data.lastLogin ) then
                                         line = tooltip:AddHeader( "" );
                                         tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
-                                        tooltip:SetCell( line, 1, "Last Login" );
+                                        tooltip:SetCell( line, 1, L["Last Login"] );
                                         tooltip:SetCell( line, 2, date( "%c", self.anchor.data.lastLogin ) );
                                         tooltip:SetLineScript( line, "OnEnter", emptyFunction );                -- empty function allows the background to highlight
                                     end
@@ -778,11 +778,11 @@ function addon:ShowInfo( frame, manualToggle )
                                         local currentTime = GetServerTime();
                                         line = tooltip:AddHeader( "" );
                                         tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
-                                        tooltip:SetCell( line, 1, "Locked Instances", 2 );
+                                        tooltip:SetCell( line, 1, L["Locked Instances"], 2 );
                                         line = tooltip:AddHeader( "" );
                                         tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
-                                        tooltip:SetCell( line, 1, "Time Remaining" );
-                                        tooltip:SetCell( line, 2, "Instance Name" );
+                                        tooltip:SetCell( line, 1, L["Time Remaining"] );
+                                        tooltip:SetCell( line, 2, L["Instance Name"] );
                                         for k, p in next, self.anchor.data.instanceLockData do
                                             line = tooltip:AddHeader( "" );
                                             tooltip:SetLineColor( line, 1, 1, 1, 0.1 );
@@ -838,7 +838,7 @@ function addon:ShowInfo( frame, manualToggle )
         populateCurrencyData( L["Currency"], tooltip, charList, currencyDisplayList );
     end
     if( true ) then
-        popuateHolidayData( "Holiday Events", tooltip, charList, holidayDisplayList );
+        popuateHolidayData( L["Holiday Events"], tooltip, charList, holidayDisplayList );
     end
 
     lineNum = tooltip:AddLine( );

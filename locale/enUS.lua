@@ -18,12 +18,23 @@ L["Currency"]                           = "Currency";
 L["Emissary"]                           = "Emissary";
 L["Repeatable Quest"]                   = "Repeatable Quest";
 L["Character iLevels"]                  = "Character iLevels";
+L["Time Played"]                        = "Time Played";
+L["Last Login"]                         = "Last Login";
 L["Defeated"]                           = "Defeated";
 L["Available"]                          = "Available";
 L["Right-click for configuration menu"] = "Right-click for configuration menu";
 L["Keystone Helper"]                    = "+# is current keystone, [#] is best completed mythic";
 L["*Resets in"]                         = "*Resets in";
 L["Currency Display"]                   = "Currency Display";
+L["Boss Name"]                          = "Boss Name";
+L["Quest Name"]                         = "QuestName";
+L["Status"]                             = "Status";
+L["Locked Instances"]                   = "Locked Instances";
+L["Time Remaining"]                     = "Time Remaining";
+L["Realm Name"]                         = "Realm Name";
+L["Char Name"]                          = "Char Name";
+L["Instance Name"]                      = "Instance Name";
+L["Holiday Events"]                     = "Holiday Events";
 
 -- configuration menu
 -- * headers
