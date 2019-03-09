@@ -22,7 +22,7 @@ local function getResetDateByForm( resetForm, questID )
 
     if( resetForm == "daily" ) then         resetDate = addon:getDailyLockoutDate();
     elseif( resetForm == "weekly" ) then    resetDate = addon:getWeeklyLockoutDate();
-    else                                    resetDate = nil;    print( "improper resetForm for questID: ", questID ); end
+    else                                    resetDate = nil;    print( L["Improper resetForm for questID: "], questID ); end
     
     return resetDate;
 end

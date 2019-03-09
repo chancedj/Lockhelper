@@ -108,20 +108,19 @@ L["L"]  = "L";
 L["T"]  = "T";
 
 -- quest.lua mappings
-L["Blingtron"]                  = "Blingtron";
-L["Instant Complete"]           = "Instant Complete";
-L["Main City Weekly"]           = "Main City Weekly";
-L["Seal of Fate"]               = "Seal of Fate";
-L["WoW 13th - Bosses"]          = "WoW 13th - Bosses";
-L["WoW 13th - Lore."]           = "WoW 13th - Lore.";
-L["Argus - Pristine Argunite"]  = "Argus - Pristine Argunite";
-L["Argus - Invasions"]          = "Argus - Invasions";
-L["Argus - Cheap Ridgestalker"] = "Argus - Cheap Ridgestalker";
-L["Argus - Cheap Void-Purged"]  = "Argus - Cheap Void-Purged";
-L["Argus - Cheap Lightforged"]  = "Argus - Cheap Lightforged";
-L["Daily Heroic (essences)"]    = "Daily Heroic (essences)";
-L["Daily Heroic"]               = "Daily Heroic";
-L["Island Expeditions"]         = "Island Expeditions";
+L["Blingtron"]                          = "Blingtron";
+L["Instant Complete"]                   = "Instant Complete";
+L["Main City Weekly"]                   = "Main City Weekly";
+L["Seal of Fate"]                       = "Seal of Fate";
+L["Argus - Pristine Argunite"]          = "Argus - Pristine Argunite";
+L["Argus - Invasions"]                  = "Argus - Invasions";
+L["Argus - Cheap Ridgestalker"]         = "Argus - Cheap Ridgestalker";
+L["Argus - Cheap Void-Purged"]          = "Argus - Cheap Void-Purged";
+L["Argus - Cheap Lightforged"]          = "Argus - Cheap Lightforged";
+L["Daily Heroic (essences)"]            = "Daily Heroic (essences)";
+L["Daily Heroic"]                       = "Daily Heroic";
+L["Island Expeditions"]                 = "Island Expeditions";
+L["Improper resetForm for questID: "]   = "Improper resetForm for questID: ";
 
 -- instances.lua
 L["You have used %d/10 instance locks this hour."]          = "You have used %d/10 instance locks this hour.";
