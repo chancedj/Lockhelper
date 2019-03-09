@@ -93,6 +93,24 @@ local function clearCurrencyQuests( dataTable )
     end
 end
 
+local function clearHolidayQuests( dataTable )
+    if( dataTable == nil ) then return; end
+    local currentServerTime = GetServerTime();
+    for eventID, eventData in next, dataTable do
+        for questID, questData in next, eventData do
+            if( questData.resetDate < currentServerTime ) then
+                eventData[ questID ]=  nil;
+            end
+        end
+
+        local key = next(questData);
+        -- if quest data is all empty, nuke the event data.
+        if( key == nil ) then
+            dataTable[ eventID ] = nil;
+        end;
+    end
+end
+
 function addon:checkExpiredLockouts()
     -- if we add a new element, it will be empty for the charData
     -- take care of this by exiting.
@@ -107,7 +125,7 @@ function addon:checkExpiredLockouts()
             charData.currency           = charData.currency or {};
             charData.weeklyQuests       = charData.weeklyQuests or {};
             charData.instanceLockData   = charData.instanceLockData or {};
-            charData.holidyQuests       = charData.holidyQuests or {};
+            charData.holidayEvents      = charData.holidayEvents or {};
 
             if( charData.instances ~= nil ) then
                 for instanceName, instanceData in next, charData.instances do
@@ -125,6 +143,7 @@ function addon:checkExpiredLockouts()
             clearExpiredEmissaries( charData.emissaries );
             clearExpiredLockouts( charData.weeklyQuests );
             clearCurrencyQuests( charData.currency );
+            clearHolidayQuests( charData.holidayEvents );
         end -- for charNdx, charData in next, characters
     end -- for realmName, charData in next, LockoutDb
 end -- checkExpiredLockouts()
