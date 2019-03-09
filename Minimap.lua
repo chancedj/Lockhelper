@@ -108,44 +108,6 @@ local function getDisplayTime( displayTime )
     end;
 end
 
-local function getLockDataByChar( realmName, charNdx )
-    local charData = LockoutDb[ realmName ][ charNdx ];
-    local instanceLockData = charData.instanceLockData or {};
-
-    local charLockData = {};
-    for ndx, singleLockData in next, instanceLockData do
-        charLockData[ #charLockData + 1 ] = {
-            realmName = realmName,
-            charName = charData.charName,
-            instanceId = singleLockData.instanceId,
-            timeSaved = singleLockData.timeSaved
-        };
-    end
-
-    addon:debug( "Char: ", charNdx, " is locked to ", #charLockData, " instances.");
-    return charLockData;
-end
-
-local function getLockDataByRealm( realmName )
-    local connectedRealms = addon:GetConnectedRealms( realmName );
-
-    local realmLockData = {};
-    for _, connectedRealmName in next, connectedRealms do
-        local realmChars = LockoutDb [ connectedRealmName ];
-        if( realmChars ) then
-            for charNdx, charData in next, realmChars do
-                local tmpLockData = getLockDataByChar( connectedRealmName, charNdx );
-
-                addon:mergeTable( realmLockData, tmpLockData );
-            end
-        end
-    end
-
-    tsort( realmLockData, function( a, b ) return a.timeSaved < b.timeSaved end);
-
-    return realmLockData;
-end
-
 local function displayReset( self )
     local ttName = self.anchor:getTTName();
     local tooltip = addon:aquireEmptyTooltip( ttName );
@@ -733,7 +695,7 @@ function addon:ShowInfo( frame, manualToggle )
     for colNdx, char in next, charList do
         tooltip:SetCell( deleteLineNum, colNdx + 1, CHAR_DELETE_TEXT, nil, "CENTER" );
         if( realmCount > 1 ) and ( self.config.profile.general.showRealmHeader ) then -- show realm only when multiple are involved
-            local realmInstanceLockData = getLockDataByRealm( char.realmName );
+            local realmInstanceLockData = addon:getLockDataByRealm( char.realmName );
             local realmDisplay = {};
             realmDisplay.displayTT =    function( self )
                                             local ttName = self.anchor:getTTName();
@@ -775,7 +737,7 @@ function addon:ShowInfo( frame, manualToggle )
             tooltip:SetCellScript( realmLineNum, colNdx + 1, "OnLeave", function() realmDisplay:deleteTT( ); end );     -- close out tooltip when leaving
         end
         local charData = LockoutDb[ char.realmName ][ char.charNdx ];
-        local charInstanceLockData = getLockDataByChar( char.realmName, char.charNdx );
+        local charInstanceLockData = addon:getLockDataByChar( char.realmName, char.charNdx );
         local charDisplay = {};
         charDisplay.displayTT = function( self )
                                     if ( charData.iLevel == nil ) then

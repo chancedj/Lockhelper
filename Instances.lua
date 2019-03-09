@@ -9,8 +9,8 @@ local addon = LibStub( "AceAddon-3.0" ):GetAddon( addonName );
 local L     = LibStub( "AceLocale-3.0" ):GetLocale( addonName, false );
 
 -- Upvalues
-local next, type, table, select, tsort = -- variables
-      next, type, table, select, table.sort      -- lua functions
+local next, type, table, select, sfmt, tsort = -- variables
+      next, type, table, select,  string.format, table.sort      -- lua functions
 
 -- cache blizzard function/globals
 local GetRealmName, GetNumRFDungeons, GetRFDungeonInfo,                                        -- variables
@@ -231,11 +231,55 @@ local function flagInstancesAsReset()
     end
 end
 
--- TODO: Call on BOSS_KILL event
+
+function addon:getLockDataByChar( realmName, charNdx )
+    local charData = LockoutDb[ realmName ][ charNdx ];
+    local instanceLockData = charData.instanceLockData or {};
+
+    local charLockData = {};
+    for ndx, singleLockData in next, instanceLockData do
+        charLockData[ #charLockData + 1 ] = {
+            realmName = realmName,
+            charName = charData.charName,
+            instanceId = singleLockData.instanceId,
+            timeSaved = singleLockData.timeSaved
+        };
+    end
+
+    addon:debug( "Char: ", charNdx, " is locked to ", #charLockData, " instances.");
+    return charLockData;
+end
+
+function addon:getLockDataByRealm( realmName )
+    local connectedRealms = addon:GetConnectedRealms( realmName );
+
+    local realmLockData = {};
+    for _, connectedRealmName in next, connectedRealms do
+        local realmChars = LockoutDb [ connectedRealmName ];
+        if( realmChars ) then
+            for charNdx, charData in next, realmChars do
+                local tmpLockData = addon:getLockDataByChar( connectedRealmName, charNdx );
+
+                addon:mergeTable( realmLockData, tmpLockData );
+            end
+        end
+    end
+
+    tsort( realmLockData, function( a, b ) return a.timeSaved < b.timeSaved end);
+
+    return realmLockData;
+end
+
 function addon:IncrementInstanceLockCount()
     addon:removeExpiredInstances();
     local instanceId, difficulty = getPlayerInstanceId();
     local instanceLockData = addon.playerDb.instanceLockData or {};
+
+    local lockedTotal = getLockDataByRealm( );
+    if( lockedTotal > 5 ) then
+        print( sfmt(L["You have used %d/10 instance locks this hour."], lockedTotal) );
+    end
+
     if( instanceId > 0 ) then
         local lockedInstance = lockedInstanceInList( instanceId, difficulty );
         if( lockedInstance ) then
@@ -259,7 +303,7 @@ local function callbackResetInstances( test )
     local instanceId = getPlayerInstanceId();
 
     if( instanceId ~= 0 ) then
-        print( "Reset can only be successful outside of the instance." );
+        print( L["Reset can only be successful outside of the instance."] );
         return;
     end
 

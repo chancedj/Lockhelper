@@ -107,9 +107,6 @@ L["M"]  = "M";
 L["L"]  = "L";
 L["T"]  = "T";
 
--- server reset
-L["Instances Reset"]            = "Instances Reset";
-
 -- quest.lua mappings
 L["Blingtron"]                  = "Blingtron";
 L["Instant Complete"]           = "Instant Complete";
@@ -125,6 +122,11 @@ L["Argus - Cheap Lightforged"]  = "Argus - Cheap Lightforged";
 L["Daily Heroic (essences)"]    = "Daily Heroic (essences)";
 L["Daily Heroic"]               = "Daily Heroic";
 L["Island Expeditions"]         = "Island Expeditions";
+
+-- instances.lua
+L["You have used %d/10 instance locks this hour."]          = "You have used %d/10 instance locks this hour.";
+L["Reset can only be successful outside of the instance."]  = "Reset can only be successful outside of the instance.";
+L["Instances Reset"]                                        = "Instances Reset";
 
 -- expansion abbreviations
 L["Van"]    = "Van";
