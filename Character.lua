@@ -144,6 +144,8 @@ function addon:checkExpiredLockouts()
             clearExpiredLockouts( charData.weeklyQuests );
             clearCurrencyQuests( charData.currency );
             clearHolidayQuests( charData.holidayEvents );
+            -- ** note ** instance lockout not done here as it's done elsewhere since we have to constantly check.
+
         end -- for charNdx, charData in next, characters
     end -- for realmName, charData in next, LockoutDb
 end -- checkExpiredLockouts()
@@ -151,7 +153,7 @@ end -- checkExpiredLockouts()
 function addon:InitCharDB()
     -- get and initialize realm data
     local realmName = GetRealmName();
-    LockoutDb = LockoutDb or {};                            -- initialize database if not already initialized
+    LockoutDb = LockoutDb or {};                              -- initialize database if not already initialized
     LockoutDb[ realmName ] = LockoutDb[ realmName ] or {};    -- initialize realmDb if not already initialized
 
     -- get and initialize character data
