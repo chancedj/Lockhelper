@@ -58,6 +58,9 @@ L["Display Expansion"]          = "Display Expansion";
 L["Anchor To"]                  = "Anchor To";
 L["Show Reset Time"]            = "Show Reset Time"    
 L["Choose Icon (reload ui)"]    = "Choose Icon (reload ui)";
+L["Frame Scale"]                = "Frame Scale";
+L["Start Tracking Level"]       = "Start Tracking Level";
+L["Visible Characters"]         = "Visible Characters";
 
 -- * label descriptions
 L["Enables / disables the addon"]                                   = "Enables / disables the addon";
@@ -73,8 +76,8 @@ L["Show in list only when killed"]                                  = "Show in l
 L["Show currency information"]                                      = "Show currency information";
 L["Configures currency display"]                                    = "Configures currency display";
 L["Show Emissary Information"]                                      = "Show Emissary Information";
-L["Emissary groups"]												= "Emissary groups";
-L["Which emissary groups to display"]								= "Which emissary groups to display";
+L["Emissary groups"]                                                = "Emissary groups";
+L["Which emissary groups to display"]                               = "Which emissary groups to display";
 L["Show repeatable quest information"]                              = "Show repeatable quest information";
 L["Configure how currency is sorted"]                               = "Configure how currency is sorted";
 L["Select which currencies you'd like to see"]                      = "Select which currencies you'd like to see";
@@ -82,6 +85,9 @@ L["Display expansion abbreviation the currency belongs to"]         = "Display e
 L["Choose where hover tooltip displays"]                            = "Choose where hover tooltip displays";
 L["Show reset time instead of checkbox when completed"]             = "Show reset time instead of checkbox when completed"
 L["Choose icon for addon - requires ui refresh or login/logout"]    = "Choose icon for addon - requires ui refresh or login/logout";
+L["Configure the scale of the window"]                              = "Configure the scale of the window";
+L["Start tracking characters greater than or equal to level below"] = "Start tracking characters greater than or equal to level below";
+L["Which characters should show in menu"]                           = "Which characters should show in menu";
 
 -- difficulty mapping full
 L["Unknown"]            = "Unknown";
@@ -93,8 +99,8 @@ L["Timewalking"]        = "Timewalking";
 
 -- difficulty mapping abbreviation
 L["U"]  = "U";
-L["N"] 	= "N";
-L["H"] 	= "H";
+L["N"]  = "N";
+L["H"]  = "H";
 L["M"]  = "M";
 L["L"]  = "L";
 L["T"]  = "T";

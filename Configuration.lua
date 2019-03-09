@@ -66,8 +66,8 @@ local function getGeneralOptionConfig( self )
             },
             configureFrameScale = {
               order = 3,
-              name = "Frame Scale",
-              desc = "Configure the scale of the window",
+              name = L["Frame Scale"],
+              desc = L["Configure the scale of the window"],
               type = "range",
               min = 0.50,
               max = 1.50,
@@ -155,8 +155,8 @@ local function getCharacterOptionConfig( self )
             },
             charTrackWhen = {
               order = 5,
-              name = "Start Tracking Level",
-              desc = "Start tracking characters greater than or equal to level below",
+              name = L["Start Tracking Level"],
+              desc = L["Start tracking characters greater than or equal to level below"],
               type = "range",
               min = 1,
               max = getCurrentMaxLevel(),
@@ -166,8 +166,8 @@ local function getCharacterOptionConfig( self )
             },
             charVisible = {
               order = 6,
-              name = "Visible Characters",
-              desc = "Which characters should show in menu",
+              name = L["Visible Characters"],
+              desc = L["Which characters should show in menu"],
               type = "multiselect",
               values = showCharList,
               set = function(info,key,val) self.config.profile.general.showCharList[key] = val; end,
