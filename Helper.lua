@@ -63,33 +63,43 @@ local MapRegionReset = {
     [5] = 5  -- CN
 }
 
+--[[ wday values
+1 = Sun
+2 = Mon
+3 = Tue
+4 = Wed
+5 = Thur
+6 = Fri
+7 = Sat
+--]]
+
 local weekdayRemap = {
     [3] = {
-        [1] = 1,
-        [2] = 0,
-        [3] = 6,
         [4] = 5,
         [5] = 4,
         [6] = 3,
         [7] = 2,
+        [1] = 1,
+        [2] = 0,
+        [3] = 6, -- Tue
     },
     [4] = {
-        [1] = 2,
-        [2] = 1,
-        [3] = 0,
-        [4] = 6,
         [5] = 5,
         [6] = 4,
         [7] = 3,
+        [1] = 2,
+        [2] = 1,
+        [3] = 0,
+        [4] = 6, -- Wed
     },
     [5] = {
+        [6] = 5,
+        [7] = 4,
         [1] = 3,
         [2] = 2,
         [3] = 1,
         [4] = 0,
-        [5] = 6,
-        [6] = 5,
-        [7] = 4,
+        [5] = 6, -- Thur
     },
 }
 
@@ -468,22 +478,22 @@ function addon:getDailyLockoutDate()
     return GetServerTime() + GetQuestResetTime();
 end
 
--- TODO!  Add params to test.....
 function addon:getWeeklyLockoutDate()
     local secondsInDay      = 24 * 60 * 60;
-    local serverResetDay    = MapRegionReset[ GetCurrentRegion() ];
+    local currentRegion     = GetCurrentRegion();
+    local serverResetDay    = MapRegionReset[ currentRegion ];
     local currentServerTime = GetServerTime();
-    local daysLefToReset    = weekdayRemap[ serverResetDay ][ date( "*t", currentServerTime ).wday ];
-    local weeklyResetTime   = self:getDailyLockoutDate();
+    local dayOfWeek         = date( "*t", currentServerTime ).wday;
+    local daysLefToReset    = weekdayRemapNew[ serverResetDay ][ dayOfWeek ];
 
-    -- handle reset on day of reset (before vs after server reset)
-    if( daysLefToReset == 6 ) then
-        -- if they are diff, we've passed server reset time.  so push it a week.
-        if( date("%x", weeklyResetTime) ~= date("%x", currentServerTime) ) then
-            weeklyResetTime = weeklyResetTime + (daysLefToReset * secondsInDay);
+    local dailyResetTime    = self:getDailyLockoutDate( currentServerTime );
+    local weeklyResetTime   = dailyResetTime + (daysLefToReset * secondsInDay);
+
+    if( serverResetDay == dayOfWeek ) then
+        -- if we're on reset day AND the dates match,  we just use dailylockout because
+        if( date("%x", dailyResetTime) == date("%x", currentServerTime) ) then
+            weeklyResetTime = dailyResetTime;
         end
-    else
-        weeklyResetTime = weeklyResetTime + (daysLefToReset * secondsInDay);
     end
 
     return weeklyResetTime
