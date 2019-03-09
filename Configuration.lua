@@ -465,6 +465,36 @@ local function minimapPositionFix( self )
     end
 end
 
+function addon:OnEnable()
+    self:RegisterEvent( "PLAYER_ENTERING_WORLD", "EVENT_ResetExpiredData" );
+    self:RegisterEvent( "ZONE_CHANGED_NEW_AREA", "EVENT_CheckEnteredInstance" );
+    self:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", "EVENT_CheckEnteredInstance" );
+    self:RegisterBucketEvent( "UNIT_QUEST_LOG_CHANGED", 1, "EVENT_FullCharacterRefresh" );
+    self:RegisterEvent( "BAG_UPDATE", "EVENT_FullCharacterRefresh" );
+    self:RegisterEvent( "TIME_PLAYED_MSG", "EVENT_TimePlayed" );
+    self:RegisterEvent( "PLAYER_LOGOUT", "EVENT_Logout" );
+    self:RegisterEvent( "BOSS_KILL", "EVENT_SaveToInstance" );
+    self:RegisterBucketEvent( "CURRENCY_DISPLAY_UPDATE", 1, "EVENT_CoinUpdate" );
+
+    self:RegisterChatCommand( "lo", "ChatCommand" );
+    self:RegisterChatCommand( "lockedout", "ChatCommand" );
+end
+
+function addon:OnDisable()
+    self:UnRegisterEvent( "PLAYER_ENTERING_WORLD" );
+    self:UnRegisterEvent( "ZONE_CHANGED_NEW_AREA" );
+    self:UnRegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" );
+    self:UnRegisterEvent( "UNIT_QUEST_LOG_CHANGED" );
+    self:UnRegisterEvent( "BAG_UPDATE" );
+    self:UnRegisterEvent( "TIME_PLAYED_MSG" );
+    self:UnRegisterEvent( "PLAYER_LOGOUT" );
+    self:UnRegisterEvent( "BOSS_KILL" );
+    self:UnRegisterEvent( "CURRENCY_DISPLAY_UPDATE" );
+
+    self:UnRegisterChatCommand( "lo" );
+    self:UnRegisterChatCommand( "lockedout" );
+end
+
 function addon:OnInitialize()
     local defaultOptions = self:getDefaultOptions();
     self.config = LibStub( "AceDB-3.0" ):New( "LockedOutConfig", defaultOptions, true );
@@ -486,19 +516,6 @@ function addon:OnInitialize()
     LibStub( "AceConfigRegistry-3.0" ):RegisterOptionsTable( self.optionFrameName, self:getConfigOptions() );
     self.optionFrame = LibStub( "AceConfigDialog-3.0" ):AddToBlizOptions( self.optionFrameName, addonName );
     self.optionFrame.default = function() self:ResetDefaults() end;
-    self:RegisterChatCommand( "lo", "ChatCommand" );
-    self:RegisterChatCommand( "lockedout", "ChatCommand" );
-
-    -- events
-    self:RegisterEvent( "PLAYER_ENTERING_WORLD", "EVENT_ResetExpiredData" );
-    self:RegisterEvent( "ZONE_CHANGED_NEW_AREA", "EVENT_CheckEnteredInstance" );
-    self:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", "EVENT_CheckEnteredInstance" );
-    self:RegisterBucketEvent( "UNIT_QUEST_LOG_CHANGED", 1, "EVENT_FullCharacterRefresh" );
-    self:RegisterEvent( "BAG_UPDATE", "EVENT_FullCharacterRefresh" );
-    self:RegisterEvent( "TIME_PLAYED_MSG", "EVENT_TimePlayed" );
-    self:RegisterEvent( "PLAYER_LOGOUT", "EVENT_Logout" );
-    self:RegisterEvent( "BOSS_KILL", "EVENT_SaveToInstance" );
-    self:RegisterBucketEvent( "CURRENCY_DISPLAY_UPDATE", 1, "EVENT_CoinUpdate" );
 
     self.toolTipShowing = false;
     self.loggingOut = false;
