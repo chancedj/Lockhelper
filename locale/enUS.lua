@@ -2,6 +2,8 @@ local addonName, _ = ...;
 
 local L = LibStub( "AceLocale-3.0" ):NewLocale( addonName, "enUS", true );
 
+-- TODO - Switch to blizzard global strings where possible!
+
 -- addon name
 L["Locked Out"] = "Locked Out";
 

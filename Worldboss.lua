@@ -18,6 +18,7 @@ local EJ_GetCurrentTier, EJ_SelectTier, EJ_GetInstanceByIndex, EJ_GetEncounterIn
         READY_CHECK_READY_TEXTURE, C_TaskQuest.IsActive     -- blizzard api
 
 -- Blizzard api cannot link npc id's to world quests, so we have to hardcode
+-- TODO - Query EJ_* on login and cache data to possible Localize names?
 local WORLD_BOSS_LIST = {
 ---[[
     -- Pandaria

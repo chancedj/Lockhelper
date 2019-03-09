@@ -241,13 +241,6 @@ function addon:IncrementInstanceLockCount()
         if( lockedInstance ) then
             lockedInstance.timeSaved = GetServerTime();
         else
-        --[[
-            * call on BOSS_KILL
-            * if in instance, save info as new info (if lookup returns false)
-            * if leaving instance and NOT saved, remove from stack
-            * if leaving instance and SAVED, leave as is.
-            * if instance is reset and nothing saved - does it count?
-        --]]
             addon:debug( "adding instance to list: ", addon:GetInstanceName( instanceId ) );
             instanceLockData[ #instanceLockData + 1 ] = {
                                                             instanceId = instanceId,

@@ -468,6 +468,7 @@ function addon:getDailyLockoutDate()
     return GetServerTime() + GetQuestResetTime();
 end
 
+-- TODO!  Add params to test.....
 function addon:getWeeklyLockoutDate()
     local secondsInDay      = 24 * 60 * 60;
     local serverResetDay    = MapRegionReset[ GetCurrentRegion() ];

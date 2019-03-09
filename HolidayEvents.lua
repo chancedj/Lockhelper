@@ -72,6 +72,7 @@ local EVENTS_TO_TRACK = {
     },
 }
 
+-- todo: combine wth Quests.Lua version...
 local function checkQuestStatus( questID )
     local resetDate = addon:getDailyLockoutDate();
 

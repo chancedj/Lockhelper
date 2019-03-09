@@ -27,6 +27,7 @@ local function getResetDateByForm( resetForm, questID )
     return resetDate;
 end
 
+-- todo: combine wth HolidayEvents.Lua version...
 local function checkQuestStatus( self )
     for _, questID in next, self.checkIDs do
         local resetDate = getResetDateByForm( self.resetForm, questID );
