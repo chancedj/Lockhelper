@@ -261,8 +261,9 @@ local CURRENCY_LIST = {
     { ID=1743, name=nil, icon=nil, expansionLevel=7, type="C", show=false }, -- 8.2 NOT CURRENTLY USED 
     { ID=1745, name=nil, icon=nil, expansionLevel=7, type="C", show=false }, -- Nazjatar Bodyguard - Neri Sharpfin 
     { ID=1746, name=nil, icon=nil, expansionLevel=7, type="C", show=false }, -- Nazjatar Bodyguard - Vim Brinehe
-	{ ID=1755, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Coaslescing Visions
-	{ ID=1803, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Echoes of Ny'alotha
+    { ID=1755, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Coaslescing Visions
+    { ID=1803, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Echoes of Ny'alotha
+    { ID=1719, name=nil, icon=nil, expansionLevel=7, type="C", show=true },  -- Corrupted Mementos
 	
 	
     -- items
